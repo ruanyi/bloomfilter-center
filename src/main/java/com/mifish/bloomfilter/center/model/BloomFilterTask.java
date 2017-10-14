@@ -8,7 +8,8 @@ import java.util.List;
 /**
  * Description:
  * <p>
- * User: rls
+ *
+ * @author : rls
  * Date: 2017-10-13 23:39
  */
 public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask> {
@@ -52,7 +53,8 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
      * BloomFilterTaskType
      * <p>
      * <p>
-     * User: rls
+     *
+     * @author : rls
      * Date: 2017-10-13 23:39
      */
     public static enum BloomFilterTaskType {

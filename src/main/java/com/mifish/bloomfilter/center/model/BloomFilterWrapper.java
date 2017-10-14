@@ -22,16 +22,14 @@ import static com.mifish.bloomfilter.center.BloomFilterConstant.DEFAULT_CHARSET_
  * BloomFilterWrapper
  * <p>
  * <p>
- * User: rls
+ * @author : rls
  * Date: 2017-10-13 20:47
  */
 public class BloomFilterWrapper implements Serializable {
 
     private static final long serialVersionUID = 8335173601564112736L;
 
-    /**
-     * bloomfilters
-     */
+    /**bloomfilters */
     private List<BloomFilter<CharSequence>> bloomfilters = null;
 
     /**
@@ -250,8 +248,12 @@ public class BloomFilterWrapper implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         BloomFilterWrapper that = (BloomFilterWrapper) o;
 
