@@ -11,11 +11,11 @@ import com.mifish.bloomfilter.center.BloomFilterBuildService;
 public interface BloomFilterBuildTrigger {
 
     /**
-     * getBloomFilterBuilder
+     * getBloomFilterBuildService
      *
      * @return
      */
-    BloomFilterBuildService getBloomFilterBuilder();
+    BloomFilterBuildService getBloomFilterBuildService();
 
     /**
      * triggerBuild

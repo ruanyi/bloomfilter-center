@@ -15,7 +15,7 @@ public interface BloomFilterLoadTrigger {
      *
      * @return
      */
-    BloomFilterLoadService getBloomFilterLoader();
+    BloomFilterLoadService getBloomFilterLoadService();
 
     /**
      * triggerLoad

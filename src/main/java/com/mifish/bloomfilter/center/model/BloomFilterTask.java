@@ -21,13 +21,10 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
 
     private static final long serialVersionUID = -8851005177130349239L;
 
-    /***taskId*/
-    private String taskId;
-
     /***group*/
     private String group;
 
-    /***bloomFilterName */
+    /***bloomFilterName*/
     private String bloomFilterName;
 
     /***order*/
@@ -36,8 +33,6 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
     /***taskType*/
     private BloomFilterTaskType taskType;
 
-    /***dependSubTask*/
-    private List<BloomFilterTask> dependSubTask = Lists.newArrayList();
 
     /**
      * BloomFilterTask
@@ -49,30 +44,12 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
      */
     public BloomFilterTask(String group, String bloomFilterName, int order, BloomFilterTaskType
             taskType) {
-        this(UUID.randomUUID().toString(), group, bloomFilterName, order, taskType);
-    }
-
-    /**
-     * BloomFilterTask
-     *
-     * @param taskId
-     * @param group
-     * @param bloomFilterName
-     * @param order
-     * @param taskType
-     */
-    public BloomFilterTask(String taskId, String group, String bloomFilterName, int order, BloomFilterTaskType
-            taskType) {
-        this.taskId = taskId;
         this.group = group;
         this.bloomFilterName = bloomFilterName;
         this.order = order;
         this.taskType = taskType;
     }
 
-    public String getTaskId() {
-        return taskId;
-    }
 
     public String getGroup() {
         return group;
@@ -88,24 +65,6 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
 
     public BloomFilterTaskType getTaskType() {
         return taskType;
-    }
-
-    /**
-     * getDependSubTask
-     *
-     * @return
-     */
-    public List<BloomFilterTask> getDependSubTask() {
-        return new ArrayList<>(this.dependSubTask);
-    }
-
-    /**
-     * isHasSubTask
-     *
-     * @return
-     */
-    public boolean isHasSubTask() {
-        return !this.dependSubTask.isEmpty();
     }
 
     /**
@@ -159,44 +118,21 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
     }
 
     /**
-     * addDependTask
-     *
-     * @param bloomFilterName
-     * @param order
-     * @param subTaskType
-     * @return
-     */
-    public boolean addDependTask(String bloomFilterName, int order, BloomFilterTaskType subTaskType) {
-        if (getTaskType() == BloomFilterTaskType.NORMAL_LOAD_TASK
-                || getTaskType() == BloomFilterTaskType.FORCE_LOAD_TASK
-                || getTaskType() == BloomFilterTaskType.NORMAL_BUILD_TASK
-                || getTaskType() == BloomFilterTaskType.FORCE_BUILD_TASK) {
-            BloomFilterTask subTask = buildSubTask(this.taskId, this.group, bloomFilterName, order, subTaskType);
-            if (subTask != null) {
-                this.dependSubTask.add(subTask);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * buildSubTask
      *
-     * @param taskId
      * @param group
      * @param bloomFilterName
      * @param order
      * @param subTaskType
      * @return
      */
-    public static BloomFilterTask buildSubTask(String taskId, String group, String bloomFilterName, int order,
+    public static BloomFilterTask buildSubTask(String group, String bloomFilterName, int order,
                                                BloomFilterTaskType subTaskType) {
         if (StringUtils.isBlank(group) || StringUtils.isBlank(bloomFilterName) || order < 0) {
             return null;
         }
         if (subTaskType == BloomFilterTaskType.SUB_BUILD_TASK || subTaskType == BloomFilterTaskType.SUB_LOAD_TASK) {
-            return new BloomFilterTask(taskId, group, bloomFilterName, order, subTaskType);
+            return new BloomFilterTask(group, bloomFilterName, order, subTaskType);
         }
         return null;
     }
@@ -310,9 +246,6 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
         if (order != that.order) {
             return false;
         }
-        if (taskId != null ? !taskId.equals(that.taskId) : that.taskId != null) {
-            return false;
-        }
         if (group != null ? !group.equals(that.group) : that.group != null) {
             return false;
         }
@@ -327,8 +260,7 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
 
     @Override
     public int hashCode() {
-        int result = taskId != null ? taskId.hashCode() : 0;
-        result = 31 * result + (group != null ? group.hashCode() : 0);
+        int result = group != null ? group.hashCode() : 0;
         result = 31 * result + (bloomFilterName != null ? bloomFilterName.hashCode() : 0);
         result = 31 * result + order;
         result = 31 * result + (taskType != null ? taskType.hashCode() : 0);

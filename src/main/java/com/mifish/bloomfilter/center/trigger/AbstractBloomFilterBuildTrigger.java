@@ -11,16 +11,16 @@ import com.mifish.bloomfilter.center.BloomFilterBuildService;
 public class AbstractBloomFilterBuildTrigger implements BloomFilterBuildTrigger {
 
     /***bloomFilterBuilder*/
-    private BloomFilterBuildService bloomFilterBuilder;
+    private BloomFilterBuildService bloomFilterBuildService;
 
     /**
-     * getBloomFilterBuilder
+     * getBloomFilterBuildService
      *
      * @return
      */
     @Override
-    public BloomFilterBuildService getBloomFilterBuilder() {
-        return this.bloomFilterBuilder;
+    public BloomFilterBuildService getBloomFilterBuildService() {
+        return this.bloomFilterBuildService;
     }
 
     /**
@@ -29,7 +29,7 @@ public class AbstractBloomFilterBuildTrigger implements BloomFilterBuildTrigger 
      * @return
      */
     protected String getBloomFilterName() {
-        return getBloomFilterBuilder().getBloomFilterName();
+        return getBloomFilterBuildService().getBloomFilterName();
     }
 
     /**
@@ -38,7 +38,7 @@ public class AbstractBloomFilterBuildTrigger implements BloomFilterBuildTrigger 
      * @return
      */
     protected String getBloomFilterGroup() {
-        return getBloomFilterBuilder().group();
+        return getBloomFilterBuildService().group();
     }
 
     /**
@@ -47,7 +47,7 @@ public class AbstractBloomFilterBuildTrigger implements BloomFilterBuildTrigger 
      * @return
      */
     protected int getBloomFilterOrder() {
-        return getBloomFilterBuilder().order();
+        return getBloomFilterBuildService().order();
     }
 
     /**
@@ -59,12 +59,17 @@ public class AbstractBloomFilterBuildTrigger implements BloomFilterBuildTrigger 
     @Override
     public boolean triggerBuild(boolean isForced) {
         if (isForced) {
-            return this.bloomFilterBuilder.foreBuild();
+            return this.bloomFilterBuildService.foreBuild();
         }
-        return this.bloomFilterBuilder.build();
+        return this.bloomFilterBuildService.build();
     }
 
-    public void setBloomFilterBuilder(BloomFilterBuildService bloomFilterBuilder) {
-        this.bloomFilterBuilder = bloomFilterBuilder;
+    /**
+     * setBloomFilterBuildService
+     *
+     * @param bloomFilterBuildService
+     */
+    public void setBloomFilterBuildService(BloomFilterBuildService bloomFilterBuildService) {
+        this.bloomFilterBuildService = bloomFilterBuildService;
     }
 }

@@ -10,40 +10,32 @@ import java.io.Serializable;
  */
 public class BloomFilterTaskResult implements Serializable {
 
-    /**
-     * bloomFilterTask
-     */
-    private BloomFilterTask bloomFilterTask;
+    /***bloomFilterTask */
+    private BloomFilterTask bftask;
 
-    /**
-     * rscode
-     */
-    private int rscode;
+    /***retCode*/
+    private int retCode;
 
-    /**
-     * message
-     */
+    /***message*/
     private String message;
 
-    /**
-     * bloomFilterWrapper
-     */
+    /***bloomFilterWrapper*/
     private BloomFilterWrapper bloomFilterWrapper;
 
-    public BloomFilterTask getBloomFilterTask() {
-        return bloomFilterTask;
+    public BloomFilterTask getBftask() {
+        return bftask;
     }
 
-    public void setBloomFilterTask(BloomFilterTask bloomFilterTask) {
-        this.bloomFilterTask = bloomFilterTask;
+    public void setBftask(BloomFilterTask bftask) {
+        this.bftask = bftask;
     }
 
-    public int getRscode() {
-        return rscode;
+    public int getRetCode() {
+        return retCode;
     }
 
-    public void setRscode(int rscode) {
-        this.rscode = rscode;
+    public void setRetCode(int retCode) {
+        this.retCode = retCode;
     }
 
     public String getMessage() {

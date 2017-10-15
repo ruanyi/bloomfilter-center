@@ -1,7 +1,5 @@
 package com.mifish.bloomfilter.center.worker;
 
-import com.mifish.bloomfilter.center.model.BloomFilterTask;
-
 /**
  * Description:
  * <p>
@@ -20,15 +18,5 @@ public interface GroupTaskWorkerManager {
      * @param order
      * @return
      */
-    BloomFilterTaskWorker report(String group, String name,int order);
-
-    /**
-     * allocateTask
-     *
-     * @param group
-     * @param name
-     * @return
-     */
-    BloomFilterTask allocateTask(String group, String name);
-
+    BloomFilterTaskWorker report(String group, String name, int order);
 }

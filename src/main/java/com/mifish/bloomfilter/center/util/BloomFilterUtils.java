@@ -9,7 +9,8 @@ package com.mifish.bloomfilter.center.util;
  * f :
  * <p>
  * <p>
- * User: rls
+ *
+ * @author : rls
  * Date: 2017-10-13 21:28
  */
 public final class BloomFilterUtils {

@@ -1,6 +1,6 @@
 package com.mifish.bloomfilter.center.service;
 
-import com.mifish.bloomfilter.center.BloomFilterLoadService;
+import com.mifish.bloomfilter.center.BloomFilterBuildService;
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.worker.BloomFilterTaskWorker;
 import com.mifish.bloomfilter.center.worker.GroupTaskWorkerManager;
@@ -15,12 +15,12 @@ import static com.google.common.base.Preconditions.checkArgument;
  * Description:
  *
  * @author: rls
- * Date: 2017-10-15 14:50
+ * Date: 2017-10-15 17:43
  */
-public class SimpleBloomFilterLoadService implements BloomFilterLoadService, InitializingBean {
+public class SimpleBloomFilterBuildService implements BloomFilterBuildService, InitializingBean {
 
     /***logger*/
-    private static final Logger logger = LoggerFactory.getLogger(SimpleBloomFilterLoadService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleBloomFilterBuildService.class);
 
     /***order*/
     private int order = 0;
@@ -39,27 +39,15 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        checkArgument(StringUtils.isNotBlank(this.group), "SimpleBloomFilterLoadService," +
+        checkArgument(StringUtils.isNotBlank(this.group), "SimpleBloomFilterBuildService," +
                 "group cannot " +
                 "be blank");
-        checkArgument(StringUtils.isNotBlank(this.bloomFilterName), "SimpleBloomFilterLoadService," +
+        checkArgument(StringUtils.isNotBlank(this.bloomFilterName), "SimpleBloomFilterBuildService," +
                 "bloomFilterName cannot " +
                 "be blank");
         this.bloomFilterTaskWorker = this.groupTaskWorkerManager.report(this.group, this.bloomFilterName, this.order);
         checkArgument(this.bloomFilterTaskWorker != null, "SimpleBloomFilterLoadService,bloomFilterTaskWorker,cannot " +
                 "be null");
-        /**触发一次启动时加载的任务*/
-        BloomFilterTask loadTask = BloomFilterTask.buildStartUpLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(loadTask);
-        if (isSuccess) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("SimpleBloomFilterLoadService,afterPropertiesSet,bloomfilter[" + this.bloomFilterName +
-                        "],submit BloomFilterTask[" + loadTask + "],isSuccess[" + isSuccess + "]");
-            }
-        } else {
-            logger.error("SimpleBloomFilterLoadService,afterPropertiesSet,bloomfilter[" + this.bloomFilterName +
-                    "],submit BloomFilterTask[" + loadTask + "],isSuccess[" + isSuccess + "],wait next load task");
-        }
     }
 
     @Override
@@ -78,29 +66,29 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
     }
 
     @Override
-    public boolean load() {
-        BloomFilterTask loadTask = BloomFilterTask.buildNormalLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(loadTask);
+    public boolean build() {
+        BloomFilterTask buildTask = BloomFilterTask.buildNormalBuildTask(this.group, this.bloomFilterName, this.order);
+        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(buildTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
-                logger.debug("SimpleBloomFilterLoadService,load[" + loadTask + "],isSuccess[" + isSuccess + "]");
+                logger.debug("SimpleBloomFilterBuildService,build[" + buildTask + "],isSuccess[" + isSuccess + "]");
             }
         } else {
-            logger.error("SimpleBloomFilterLoadService,load[" + loadTask + "],isSuccess[" + isSuccess + "]");
+            logger.error("SimpleBloomFilterBuildService,build[" + buildTask + "],isSuccess[" + isSuccess + "]");
         }
         return isSuccess;
     }
 
     @Override
-    public boolean foreLoad() {
-        BloomFilterTask loadTask = BloomFilterTask.buildForceLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(loadTask);
+    public boolean foreBuild() {
+        BloomFilterTask buildTask = BloomFilterTask.buildForceLoadTask(this.group, this.bloomFilterName, this.order);
+        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(buildTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
-                logger.debug("SimpleBloomFilterLoadService,foreLoad[" + loadTask + "],isSuccess[" + isSuccess + "]");
+                logger.debug("SimpleBloomFilterBuildService,foreBuild[" + buildTask + "],isSuccess[" + isSuccess + "]");
             }
         } else {
-            logger.error("SimpleBloomFilterLoadService,foreLoad[" + loadTask + "],isSuccess[" + isSuccess + "]");
+            logger.error("SimpleBloomFilterBuildService,foreBuild[" + buildTask + "],isSuccess[" + isSuccess + "]");
         }
         return isSuccess;
     }

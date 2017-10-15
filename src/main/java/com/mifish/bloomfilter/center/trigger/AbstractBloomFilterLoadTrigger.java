@@ -10,21 +10,21 @@ import com.mifish.bloomfilter.center.BloomFilterLoadService;
  */
 public abstract class AbstractBloomFilterLoadTrigger implements BloomFilterLoadTrigger {
 
-    /***bloomFilterLoader*/
-    private BloomFilterLoadService bloomFilterLoader;
+    /***bloomFilterLoadService*/
+    private BloomFilterLoadService bloomFilterLoadService;
 
     @Override
-    public BloomFilterLoadService getBloomFilterLoader() {
-        return this.bloomFilterLoader;
+    public BloomFilterLoadService getBloomFilterLoadService() {
+        return this.bloomFilterLoadService;
     }
 
     @Override
     public boolean triggerLoad(boolean isForced) {
         if (isForced) {
-            return this.bloomFilterLoader.foreLoad();
+            return this.bloomFilterLoadService.foreLoad();
         }
         //normal loader
-        return this.bloomFilterLoader.load();
+        return this.bloomFilterLoadService.load();
     }
 
     /**
@@ -33,7 +33,7 @@ public abstract class AbstractBloomFilterLoadTrigger implements BloomFilterLoadT
      * @return
      */
     protected String getBloomFilterName() {
-        return getBloomFilterLoader().getBloomFilterName();
+        return getBloomFilterLoadService().getBloomFilterName();
     }
 
     /**
@@ -42,7 +42,7 @@ public abstract class AbstractBloomFilterLoadTrigger implements BloomFilterLoadT
      * @return
      */
     protected String getBloomFilterGroup() {
-        return getBloomFilterLoader().group();
+        return getBloomFilterLoadService().group();
     }
 
     /**
@@ -51,15 +51,15 @@ public abstract class AbstractBloomFilterLoadTrigger implements BloomFilterLoadT
      * @return
      */
     protected int getBloomFilterOrder() {
-        return getBloomFilterLoader().order();
+        return getBloomFilterLoadService().order();
     }
 
     /**
-     * setBloomFilterLoader
+     * setBloomFilterLoadService
      *
-     * @param bloomFilterLoader
+     * @param bloomFilterLoadService
      */
-    public void setBloomFilterLoader(BloomFilterLoadService bloomFilterLoader) {
-        this.bloomFilterLoader = bloomFilterLoader;
+    public void setBloomFilterLoadService(BloomFilterLoadService bloomFilterLoadService) {
+        this.bloomFilterLoadService = bloomFilterLoadService;
     }
 }

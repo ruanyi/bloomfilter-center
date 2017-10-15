@@ -8,7 +8,8 @@ import java.util.Set;
 /**
  * Description:
  * <p>
- * User: rls
+ *
+ * @author : rls
  * Date: 2017-10-13 21:04
  */
 public interface BloomFilterContainer {
@@ -47,11 +48,11 @@ public interface BloomFilterContainer {
     /**
      * addBloomFilter
      *
-     * @param bfwrapper
      * @param name
+     * @param bfwrapper
      * @return
      */
-    boolean addBloomFilter(BloomFilterWrapper bfwrapper, String name);
+    boolean addBloomFilter(String name, BloomFilterWrapper bfwrapper);
 
     /**
      * removeBloomfilter
@@ -62,10 +63,40 @@ public interface BloomFilterContainer {
     BloomFilterWrapper removeBloomfilter(String name);
 
     /**
+     * obtainUpdatePermission
+     *
+     * @param name
+     * @param isForced
+     * @param newVersion
+     * @return
+     */
+    boolean obtainUpdatePermission(String name, boolean isForced, Date newVersion);
+
+
+    /**
+     * releaseUpdatePermission
+     *
+     * @param name
+     * @param status
+     * @return
+     */
+    boolean releaseUpdatePermission(String name, UpdateStatus status);
+
+
+    /**
+     * getUpdateStatus
+     *
+     * @param name
+     * @return
+     */
+    UpdateStatus getUpdateStatus(String name);
+
+    /**
      * obtain bloomfilter container name
      *
      * @return
      */
     String getName();
-
 }
+
+
