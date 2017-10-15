@@ -11,5 +11,13 @@ package com.mifish.bloomfilter.center.controller;
  */
 public interface BloomFilterController {
 
+    /**
+     * 判断某一个布隆索引是否生效
+     *
+     * @param bfname
+     * @return
+     */
+    boolean isBloomFilterValid(String bfname);
+
 
 }

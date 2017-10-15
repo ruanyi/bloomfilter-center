@@ -3,10 +3,11 @@ package com.mifish.bloomfilter.center;
 /**
  * Description:
  * <p>
- * User: rls
+ *
+ * @author :rls
  * Date: 2017-10-13 23:35
  */
-public interface BloomFilterBuilder {
+public interface BloomFilterBuildService {
 
     /**
      * order
@@ -14,6 +15,13 @@ public interface BloomFilterBuilder {
      * @return
      */
     int order();
+
+    /**
+     * group
+     *
+     * @return
+     */
+    String group();
 
     /**
      * getBloomFilterName

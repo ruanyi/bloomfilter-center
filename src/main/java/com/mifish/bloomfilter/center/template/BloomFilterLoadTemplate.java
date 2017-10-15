@@ -2,7 +2,6 @@ package com.mifish.bloomfilter.center.template;
 
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
-import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
 
 /**
  * Description:
@@ -13,7 +12,7 @@ import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
 public interface BloomFilterLoadTemplate {
 
     /**
-     * load
+     * loader
      *
      * @param task
      * @return

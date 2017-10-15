@@ -10,6 +10,8 @@ public final class BloomFilterConstant {
 
     public static final String DEFAULT_CHARSET_GBK = "gbk";
 
+    public static final int DEFAULT_WORK_QUEUE_NUM = 200;
+
     private BloomFilterConstant() {
         throw new RuntimeException("cannot instance BloomFilterConstant");
     }

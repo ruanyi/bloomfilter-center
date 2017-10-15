@@ -3,6 +3,7 @@ package com.mifish.bloomfilter.center.container.impl;
 import com.google.common.collect.Maps;
 import com.mifish.bloomfilter.center.container.BloomFilterContainer;
 import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 import java.util.Map;
@@ -19,20 +20,16 @@ import java.util.Set;
 public class SimpleBloomFilterContainer implements BloomFilterContainer {
 
 
-    /**
-     * default bloomfilter name,just for log
-     */
+    /***default bloomfilter name,just for log*/
     private String name = "DEFAULT_BLOOMFILTER_CONTAINER";
 
-    /**
-     * bloomfilters
-     */
+    /***bloomfilters*/
     private Map<String, BloomFilterWrapper> bloomfilters = Maps.newConcurrentMap();
 
 
     @Override
     public BloomFilterWrapper getBloomFilterByName(String name) {
-        if (name == null || "".equalsIgnoreCase(name)) {
+        if (StringUtils.isBlank(name)) {
             return null;
         }
         return bloomfilters.get(name);
@@ -40,7 +37,7 @@ public class SimpleBloomFilterContainer implements BloomFilterContainer {
 
     @Override
     public boolean isBloomFilterExist(String name) {
-        if (name == null || "".equalsIgnoreCase(name)) {
+        if (StringUtils.isBlank(name)) {
             return false;
         }
         return this.bloomfilters.containsKey(name);

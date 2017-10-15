@@ -3,7 +3,8 @@ package com.mifish.bloomfilter.center;
 /**
  * Description:
  * <p>
- * User: rls
+ *
+ * @author : rls
  * Date: 2017-10-13 23:30
  */
 public interface BloomFilterService {

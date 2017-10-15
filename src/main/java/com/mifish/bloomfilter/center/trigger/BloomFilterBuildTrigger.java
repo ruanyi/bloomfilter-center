@@ -1,6 +1,6 @@
 package com.mifish.bloomfilter.center.trigger;
 
-import com.mifish.bloomfilter.center.BloomFilterBuilder;
+import com.mifish.bloomfilter.center.BloomFilterBuildService;
 
 /**
  * Description:
@@ -15,7 +15,7 @@ public interface BloomFilterBuildTrigger {
      *
      * @return
      */
-    BloomFilterBuilder getBloomFilterBuilder();
+    BloomFilterBuildService getBloomFilterBuilder();
 
     /**
      * triggerBuild
