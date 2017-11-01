@@ -15,6 +15,8 @@ public interface TaskOptimizeStrategyContainer {
 
     /**
      * select
+     * <p>
+     * if null return default TaskOptimizeStrategy
      *
      * @param taskType
      * @return

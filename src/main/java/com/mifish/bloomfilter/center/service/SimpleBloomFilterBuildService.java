@@ -4,6 +4,7 @@ import com.mifish.bloomfilter.center.BloomFilterBuildService;
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.worker.BloomFilterTaskWorker;
 import com.mifish.bloomfilter.center.worker.GroupTaskWorkerManager;
+import com.mifish.bloomfilter.center.worker.TaskWorkerType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,11 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
     /***groupTaskWorkerManager*/
     private GroupTaskWorkerManager groupTaskWorkerManager;
 
-    /***bloomFilterTaskWorker*/
-    private BloomFilterTaskWorker bloomFilterTaskWorker;
-
+    /**
+     * afterPropertiesSet
+     *
+     * @throws Exception
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         checkArgument(StringUtils.isNotBlank(this.group), "SimpleBloomFilterBuildService," +
@@ -45,9 +48,8 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
         checkArgument(StringUtils.isNotBlank(this.bloomFilterName), "SimpleBloomFilterBuildService," +
                 "bloomFilterName cannot " +
                 "be blank");
-        this.bloomFilterTaskWorker = this.groupTaskWorkerManager.report(this.group, this.bloomFilterName, this.order);
-        checkArgument(this.bloomFilterTaskWorker != null, "SimpleBloomFilterLoadService,bloomFilterTaskWorker,cannot " +
-                "be null");
+        this.groupTaskWorkerManager.report(TaskWorkerType.BUILDER, this.group, this
+                .bloomFilterName, this.order);
     }
 
     @Override
@@ -68,7 +70,8 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
     @Override
     public boolean build() {
         BloomFilterTask buildTask = BloomFilterTask.buildNormalBuildTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(buildTask);
+        boolean isSuccess = this.groupTaskWorkerManager.allocate(TaskWorkerType.BUILDER, this.group).submitTask
+                (buildTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
                 logger.debug("SimpleBloomFilterBuildService,build[" + buildTask + "],isSuccess[" + isSuccess + "]");
@@ -82,7 +85,8 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
     @Override
     public boolean foreBuild() {
         BloomFilterTask buildTask = BloomFilterTask.buildForceLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(buildTask);
+        boolean isSuccess = this.groupTaskWorkerManager.allocate(TaskWorkerType.BUILDER, this.group).submitTask
+                (buildTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
                 logger.debug("SimpleBloomFilterBuildService,foreBuild[" + buildTask + "],isSuccess[" + isSuccess + "]");

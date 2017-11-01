@@ -22,6 +22,7 @@ import static com.mifish.bloomfilter.center.BloomFilterConstant.DEFAULT_CHARSET_
  * BloomFilterWrapper
  * <p>
  * <p>
+ *
  * @author : rls
  * Date: 2017-10-13 20:47
  */
@@ -29,7 +30,9 @@ public class BloomFilterWrapper implements Serializable {
 
     private static final long serialVersionUID = 8335173601564112736L;
 
-    /**bloomfilters */
+    /**
+     * bloomfilters
+     */
     private List<BloomFilter<CharSequence>> bloomfilters = null;
 
     /**
@@ -80,7 +83,8 @@ public class BloomFilterWrapper implements Serializable {
      * @param charsetName
      * @param timeVersion
      */
-    public BloomFilterWrapper(double falsePositiveProbability, long expectedNumberOfElements, String charsetName, Date timeVersion) {
+    public BloomFilterWrapper(double falsePositiveProbability, long expectedNumberOfElements, String charsetName,
+                              Date timeVersion) {
         checkArgument(falsePositiveProbability >= 0, "falsePositiveProbability in bloomfilter must bigger than zero.");
         checkArgument(expectedNumberOfElements >= 0, "expectedNumberOfElements in bloomfilter must bigger than zero.");
         checkArgument(Strings.isNullOrEmpty(charsetName), "charsetName in bloomfilter cannot be empty.");
@@ -99,7 +103,8 @@ public class BloomFilterWrapper implements Serializable {
      * @param expectedNumberOfElements
      */
     private void initBloomfilters(double falsePositiveProbability, long expectedNumberOfElements) {
-        double singleBfMaxAddElements = BloomFilterUtils.caculateNumberAddElements(Integer.MAX_VALUE, falsePositiveProbability);
+        double singleBfMaxAddElements = BloomFilterUtils.caculateNumberAddElements(Integer.MAX_VALUE,
+                falsePositiveProbability);
         double singleBfElements = expectedNumberOfElements;
         int bflen = 1;
         if (expectedNumberOfElements > Integer.MAX_VALUE) {//假如比整形最大值，还需要大，分桶设计
@@ -111,7 +116,8 @@ public class BloomFilterWrapper implements Serializable {
             throw new IllegalArgumentException("the bflen cannot be smaller than one.");
         }
         for (int i = 0; i < bflen; i++) {
-            BloomFilter<CharSequence> bf = BloomFilter.create(Funnels.stringFunnel(this.charset), (long) singleBfElements, falsePositiveProbability);
+            BloomFilter<CharSequence> bf = BloomFilter.create(Funnels.stringFunnel(this.charset), (long)
+                    singleBfElements, falsePositiveProbability);
             this.bloomfilters.add(bf);
         }
     }
@@ -257,12 +263,24 @@ public class BloomFilterWrapper implements Serializable {
 
         BloomFilterWrapper that = (BloomFilterWrapper) o;
 
-        if (Double.compare(that.falsePositiveProbability, falsePositiveProbability) != 0) return false;
-        if (expectedNumberOfElements != that.expectedNumberOfElements) return false;
-        if (numberOfAddedElements != that.numberOfAddedElements) return false;
-        if (bloomfilters != null ? !bloomfilters.equals(that.bloomfilters) : that.bloomfilters != null) return false;
-        if (charsetName != null ? !charsetName.equals(that.charsetName) : that.charsetName != null) return false;
-        if (charset != null ? !charset.equals(that.charset) : that.charset != null) return false;
+        if (Double.compare(that.falsePositiveProbability, falsePositiveProbability) != 0) {
+            return false;
+        }
+        if (expectedNumberOfElements != that.expectedNumberOfElements) {
+            return false;
+        }
+        if (numberOfAddedElements != that.numberOfAddedElements) {
+            return false;
+        }
+        if (bloomfilters != null ? !bloomfilters.equals(that.bloomfilters) : that.bloomfilters != null) {
+            return false;
+        }
+        if (charsetName != null ? !charsetName.equals(that.charsetName) : that.charsetName != null) {
+            return false;
+        }
+        if (charset != null ? !charset.equals(that.charset) : that.charset != null) {
+            return false;
+        }
         return timeVersion != null ? timeVersion.equals(that.timeVersion) : that.timeVersion == null;
     }
 

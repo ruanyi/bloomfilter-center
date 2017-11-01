@@ -6,6 +6,8 @@ import com.mifish.bloomfilter.center.repository.BloomFilterInputRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterTimeVersionRepository;
 import com.mifish.bloomfilter.center.template.BloomFilterBuildTemplate;
 
+import java.util.Date;
+
 /**
  * Description:
  *
@@ -20,8 +22,15 @@ public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate 
     /***bloomFilterTimeVersionRepository*/
     private BloomFilterTimeVersionRepository bloomFilterTimeVersionRepository;
 
+    /**
+     * build
+     *
+     * @param bloomFilterTask
+     * @param startTaskTime
+     * @return
+     */
     @Override
-    public BloomFilterTaskResult build(BloomFilterTask bloomFilterTask) {
+    public BloomFilterTaskResult build(BloomFilterTask bloomFilterTask, Date startTaskTime) {
         return null;
     }
 }

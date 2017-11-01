@@ -26,4 +26,21 @@ public interface BloomFilterTaskWorker {
      * @return
      */
     boolean submitTask(BloomFilterTask task);
+
+    /**
+     * getTaskWorkerType
+     *
+     * @return
+     */
+    TaskWorkerType getTaskWorkerType();
+
+
+    /**
+     * getTaskWorkerManager
+     *
+     * @return
+     */
+    GroupTaskWorkerManager getTaskWorkerManager();
+
+
 }

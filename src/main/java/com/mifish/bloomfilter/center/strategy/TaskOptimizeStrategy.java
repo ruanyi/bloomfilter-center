@@ -2,6 +2,9 @@ package com.mifish.bloomfilter.center.strategy;
 
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskPlan;
+import com.mifish.bloomfilter.center.model.TaskMeta;
+
+import java.util.List;
 
 /**
  * Description:
@@ -15,7 +18,8 @@ public interface TaskOptimizeStrategy {
      * optimize
      *
      * @param bftask
+     * @param taskMetas
      * @return
      */
-    BloomFilterTaskPlan optimize(BloomFilterTask bftask);
+    BloomFilterTaskPlan optimize(BloomFilterTask bftask, List<TaskMeta> taskMetas);
 }

@@ -41,6 +41,26 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
     /***strategyContainer*/
     private TaskOptimizeStrategyContainer strategyContainer;
 
+    /***taskWorkerType*/
+    private TaskWorkerType taskWorkerType;
+
+    /***taskWorkerManager*/
+    private GroupTaskWorkerManager taskWorkerManager;
+
+    /**
+     * AbstractBloomFilterTaskWorker
+     *
+     * @param taskWorkerType
+     * @param group
+     * @param taskWorkerManager
+     */
+    public AbstractBloomFilterTaskWorker(TaskWorkerType taskWorkerType, String group, GroupTaskWorkerManager
+            taskWorkerManager) {
+        this.taskWorkerType = taskWorkerType;
+        this.group = group;
+        this.taskWorkerManager = taskWorkerManager;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         this.exector.submit(() -> runTask());
@@ -55,13 +75,9 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
                     continue;
                 }
                 TaskOptimizeStrategy strategy = this.strategyContainer.select(oriBfTask.getTaskType());
-                if (strategy == null) {
-                    throw new RuntimeException("BloomFilterTaskWorker,cannot select any strategy,Original bloomfilter" +
-                            " task[" + oriBfTask + "],getAllStrategyNames[" + this.strategyContainer
-                            .getAllStrategyNames() + "]");
-                }
                 //优化计划
-                BloomFilterTaskPlan taskPlan = strategy.optimize(oriBfTask);
+                BloomFilterTaskPlan taskPlan = strategy.optimize(oriBfTask, this.taskWorkerManager.tellMetaTasks(this
+                        .taskWorkerType, group()));
                 //执行计划
                 executeTaskPlan(taskPlan);
             } catch (Exception ex) {
@@ -89,6 +105,21 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
                     taskContainer.size() + "],please wait for a moment.");
         }
         return isSuccess;
+    }
+
+    /**
+     * getTaskWorkerType
+     *
+     * @return
+     */
+    @Override
+    public TaskWorkerType getTaskWorkerType() {
+        return this.taskWorkerType;
+    }
+
+    @Override
+    public GroupTaskWorkerManager getTaskWorkerManager() {
+        return this.taskWorkerManager;
     }
 
     /**

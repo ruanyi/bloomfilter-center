@@ -3,10 +3,10 @@ package com.mifish.bloomfilter.center.util;
 /**
  * Description:
  * <p>
- * m :
- * n :
- * k :
- * f :
+ * m : bits数组的长度
+ * n : 需要加入其中的key的数量
+ * k : k次hash函数
+ * f : 误差率(false positive)
  * <p>
  * <p>
  *

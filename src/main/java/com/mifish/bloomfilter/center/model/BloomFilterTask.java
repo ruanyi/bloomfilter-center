@@ -1,12 +1,8 @@
 package com.mifish.bloomfilter.center.model;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

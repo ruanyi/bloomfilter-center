@@ -4,6 +4,7 @@ import com.mifish.bloomfilter.center.BloomFilterLoadService;
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.worker.BloomFilterTaskWorker;
 import com.mifish.bloomfilter.center.worker.GroupTaskWorkerManager;
+import com.mifish.bloomfilter.center.worker.TaskWorkerType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,6 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
     /***groupTaskWorkerManager*/
     private GroupTaskWorkerManager groupTaskWorkerManager;
 
-    /***bloomFilterTaskWorker*/
-    private BloomFilterTaskWorker bloomFilterTaskWorker;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         checkArgument(StringUtils.isNotBlank(this.group), "SimpleBloomFilterLoadService," +
@@ -45,12 +43,12 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
         checkArgument(StringUtils.isNotBlank(this.bloomFilterName), "SimpleBloomFilterLoadService," +
                 "bloomFilterName cannot " +
                 "be blank");
-        this.bloomFilterTaskWorker = this.groupTaskWorkerManager.report(this.group, this.bloomFilterName, this.order);
-        checkArgument(this.bloomFilterTaskWorker != null, "SimpleBloomFilterLoadService,bloomFilterTaskWorker,cannot " +
-                "be null");
+        this.groupTaskWorkerManager.report(TaskWorkerType.LOADER, this.group, this
+                .bloomFilterName, this.order);
         /**触发一次启动时加载的任务*/
         BloomFilterTask loadTask = BloomFilterTask.buildStartUpLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(loadTask);
+        boolean isSuccess = this.groupTaskWorkerManager.allocate(TaskWorkerType.LOADER, this.group).submitTask
+                (loadTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
                 logger.debug("SimpleBloomFilterLoadService,afterPropertiesSet,bloomfilter[" + this.bloomFilterName +
@@ -80,7 +78,8 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
     @Override
     public boolean load() {
         BloomFilterTask loadTask = BloomFilterTask.buildNormalLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(loadTask);
+        boolean isSuccess = this.groupTaskWorkerManager.allocate(TaskWorkerType.LOADER, this.group).submitTask
+                (loadTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
                 logger.debug("SimpleBloomFilterLoadService,load[" + loadTask + "],isSuccess[" + isSuccess + "]");
@@ -94,7 +93,8 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
     @Override
     public boolean foreLoad() {
         BloomFilterTask loadTask = BloomFilterTask.buildForceLoadTask(this.group, this.bloomFilterName, this.order);
-        boolean isSuccess = this.bloomFilterTaskWorker.submitTask(loadTask);
+        boolean isSuccess = this.groupTaskWorkerManager.allocate(TaskWorkerType.LOADER, this.group).submitTask
+                (loadTask);
         if (isSuccess) {
             if (logger.isDebugEnabled()) {
                 logger.debug("SimpleBloomFilterLoadService,foreLoad[" + loadTask + "],isSuccess[" + isSuccess + "]");
