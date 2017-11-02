@@ -3,7 +3,7 @@ package com.mifish.bloomfilter.center.template.build;
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
 import com.mifish.bloomfilter.center.repository.BloomFilterInputRepository;
-import com.mifish.bloomfilter.center.repository.BloomFilterTimeVersionRepository;
+import com.mifish.bloomfilter.center.repository.BloomFilterLockRepository;
 import com.mifish.bloomfilter.center.template.BloomFilterBuildTemplate;
 
 import java.util.Date;
@@ -22,6 +22,9 @@ public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate 
     /***bloomFilterTimeVersionRepository*/
     private BloomFilterTimeVersionRepository bloomFilterTimeVersionRepository;
 
+    /***bloomFilterLockRepository*/
+    private BloomFilterLockRepository bloomFilterLockRepository;
+
     /**
      * build
      *
@@ -32,5 +35,27 @@ public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate 
     @Override
     public BloomFilterTaskResult build(BloomFilterTask bloomFilterTask, Date startTaskTime) {
         return null;
+    }
+
+    /**
+     * getBloomFilterLockRepository
+     *
+     * @return
+     */
+    @Override
+    public BloomFilterLockRepository getBloomFilterLockRepository() {
+        return this.bloomFilterLockRepository;
+    }
+
+    public void setBloomFilterInputRepository(BloomFilterInputRepository bloomFilterInputRepository) {
+        this.bloomFilterInputRepository = bloomFilterInputRepository;
+    }
+
+    public void setBloomFilterTimeVersionRepository(BloomFilterTimeVersionRepository bloomFilterTimeVersionRepository) {
+        this.bloomFilterTimeVersionRepository = bloomFilterTimeVersionRepository;
+    }
+
+    public void setBloomFilterLockRepository(BloomFilterLockRepository bloomFilterLockRepository) {
+        this.bloomFilterLockRepository = bloomFilterLockRepository;
     }
 }

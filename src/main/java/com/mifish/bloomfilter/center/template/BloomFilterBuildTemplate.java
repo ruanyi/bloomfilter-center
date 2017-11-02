@@ -2,6 +2,7 @@ package com.mifish.bloomfilter.center.template;
 
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
+import com.mifish.bloomfilter.center.repository.BloomFilterLockRepository;
 
 import java.util.Date;
 
@@ -21,5 +22,12 @@ public interface BloomFilterBuildTemplate {
      * @return
      */
     BloomFilterTaskResult build(BloomFilterTask bloomFilterTask, Date startTaskTime);
+
+    /**
+     * getBloomFilterLockRepository
+     *
+     * @return
+     */
+    BloomFilterLockRepository getBloomFilterLockRepository();
 
 }

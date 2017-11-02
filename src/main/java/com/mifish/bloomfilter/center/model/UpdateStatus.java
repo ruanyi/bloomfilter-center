@@ -1,4 +1,4 @@
-package com.mifish.bloomfilter.center.container;
+package com.mifish.bloomfilter.center.model;
 
 /**
  * Description:

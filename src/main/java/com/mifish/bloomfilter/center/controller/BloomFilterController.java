@@ -17,5 +17,4 @@ public interface BloomFilterController {
      */
     boolean isBloomFilterValid(String bfname);
 
-
 }

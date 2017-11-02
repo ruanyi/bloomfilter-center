@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author: rls
  * Date: 2017-10-15 20:40
  */
-public class QueryIdRangeModel implements Serializable {
+public class QueryIdRange implements Serializable {
 
     private static final long serialVersionUID = 8230258652962049392L;
 
@@ -47,7 +47,7 @@ public class QueryIdRangeModel implements Serializable {
 
     @Override
     public String toString() {
-        return "QueryIdRangeModel{" +
+        return "QueryIdRange{" +
                 "min=" + min +
                 ", max=" + max +
                 ", count=" + count +
@@ -63,7 +63,7 @@ public class QueryIdRangeModel implements Serializable {
             return false;
         }
 
-        QueryIdRangeModel that = (QueryIdRangeModel) o;
+        QueryIdRange that = (QueryIdRange) o;
 
         if (min != that.min) {
             return false;

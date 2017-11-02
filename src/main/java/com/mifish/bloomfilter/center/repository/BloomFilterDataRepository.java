@@ -1,7 +1,7 @@
 package com.mifish.bloomfilter.center.repository;
 
 import com.mifish.bloomfilter.center.model.BloomFilterKeyData;
-import com.mifish.bloomfilter.center.model.QueryIdRangeModel;
+import com.mifish.bloomfilter.center.model.QueryIdRange;
 
 import java.util.Date;
 import java.util.List;
@@ -30,7 +30,7 @@ public interface BloomFilterDataRepository {
      * @param endTime
      * @return
      */
-    QueryIdRangeModel queryIdRange(Date startTime, Date endTime);
+    QueryIdRange queryIdRange(Date startTime, Date endTime);
 
     /**
      * queryKeysByPage

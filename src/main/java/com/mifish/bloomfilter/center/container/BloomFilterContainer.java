@@ -1,6 +1,7 @@
 package com.mifish.bloomfilter.center.container;
 
 import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
+import com.mifish.bloomfilter.center.model.UpdateStatus;
 
 import java.util.Date;
 import java.util.Set;
@@ -61,35 +62,6 @@ public interface BloomFilterContainer {
      * @return
      */
     BloomFilterWrapper removeBloomfilter(String name);
-
-    /**
-     * obtainUpdatePermission
-     *
-     * @param name
-     * @param isForced
-     * @param newVersion
-     * @return
-     */
-    boolean obtainUpdatePermission(String name, boolean isForced, Date newVersion);
-
-
-    /**
-     * releaseUpdatePermission
-     *
-     * @param name
-     * @param status
-     * @return
-     */
-    boolean releaseUpdatePermission(String name, UpdateStatus status);
-
-
-    /**
-     * getUpdateStatus
-     *
-     * @param name
-     * @return
-     */
-    UpdateStatus getUpdateStatus(String name);
 
     /**
      * obtain bloomfilter container name

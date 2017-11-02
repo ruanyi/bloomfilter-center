@@ -22,6 +22,15 @@ public class BloomFilterTaskResult implements Serializable {
     /***bloomFilterWrapper*/
     private BloomFilterWrapper bloomFilterWrapper;
 
+    /**
+     * isSuccess
+     *
+     * @return
+     */
+    public boolean isSuccess() {
+        return this.retCode == 0;
+    }
+
     public BloomFilterTask getBftask() {
         return bftask;
     }
