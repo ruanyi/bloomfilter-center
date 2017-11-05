@@ -30,40 +30,32 @@ public class BloomFilterWrapper implements Serializable {
 
     private static final long serialVersionUID = 8335173601564112736L;
 
-    /**
-     * bloomfilters
-     */
+    /*** bloomfilters*/
     private List<BloomFilter<CharSequence>> bloomfilters = null;
 
-    /**
-     * charsetName
-     */
+    /***charsetName*/
     private String charsetName = DEFAULT_CHARSET_GBK;
 
-    /**
-     * charset
-     */
+    /***charset*/
     private transient volatile Charset charset = null;
 
-    /**
-     * timeVersion
-     */
+    /***timeVersion*/
     private Date timeVersion = null;
 
-    /**
-     * falsePositiveProbability
-     */
+    /***falsePositiveProbability*/
     private double falsePositiveProbability;
 
-    /**
-     * expectedNumberOfElements
-     */
+    /***expectedNumberOfElements*/
     private long expectedNumberOfElements;
 
-    /**
-     * numberOfAddedElements
-     */
+    /***numberOfBits*/
+    private long numberOfBits = 0L;
+
+    /***numberOfAddedElements*/
     private volatile long numberOfAddedElements = 0;
+
+    /***布隆索引文件大小，单位：字节数*/
+    private long bloomfilterFileSize = 0L;
 
     /**
      * BloomFilterWrapper
@@ -90,6 +82,8 @@ public class BloomFilterWrapper implements Serializable {
         checkArgument(Strings.isNullOrEmpty(charsetName), "charsetName in bloomfilter cannot be empty.");
         this.falsePositiveProbability = falsePositiveProbability;
         this.expectedNumberOfElements = expectedNumberOfElements;
+        this.numberOfBits = BloomFilterUtils.caculateOptimalNumOfBits(expectedNumberOfElements,
+                falsePositiveProbability);
         this.charsetName = charsetName;
         this.timeVersion = timeVersion;
         initCharset();
@@ -107,14 +101,13 @@ public class BloomFilterWrapper implements Serializable {
                 falsePositiveProbability);
         double singleBfElements = expectedNumberOfElements;
         int bflen = 1;
-        if (expectedNumberOfElements > Integer.MAX_VALUE) {//假如比整形最大值，还需要大，分桶设计
+        //假如比整形最大值，还需要大，分桶设计
+        if (expectedNumberOfElements > Integer.MAX_VALUE) {
             bflen = (int) Math.ceil(expectedNumberOfElements % singleBfMaxAddElements);
             singleBfElements = Math.round(expectedNumberOfElements / bflen) + 1;
         }
         this.bloomfilters = new ArrayList<>(bflen);
-        if (bflen < 1) {
-            throw new IllegalArgumentException("the bflen cannot be smaller than one.");
-        }
+        checkArgument(bflen < 1, "the length of bloomfilters cannot be smaller than one.");
         for (int i = 0; i < bflen; i++) {
             BloomFilter<CharSequence> bf = BloomFilter.create(Funnels.stringFunnel(this.charset), (long)
                     singleBfElements, falsePositiveProbability);
@@ -135,11 +128,11 @@ public class BloomFilterWrapper implements Serializable {
     }
 
     /**
-     * bloomfilterBucketLength
+     * getBloomfilterBucketLength
      *
      * @return
      */
-    public int bloomfilterBucketLength() {
+    public int getBloomfilterBucketLength() {
         return this.bloomfilters.size();
     }
 
@@ -155,9 +148,9 @@ public class BloomFilterWrapper implements Serializable {
         }
         initCharset();
         BloomFilter<CharSequence> bf = this.bloomfilters.get(0);
-        if (bloomfilterBucketLength() > 1) {
+        if (getBloomfilterBucketLength() > 1) {
             byte[] datas = element.toString().getBytes(this.charset);
-            int bfIndex = Math.abs(Hashing.murmur3_128().hashBytes(datas).asInt()) % bloomfilterBucketLength();
+            int bfIndex = Math.abs(Hashing.murmur3_128().hashBytes(datas).asInt()) % getBloomfilterBucketLength();
             bf = this.bloomfilters.get(bfIndex);
         }
         synchronized (bf) {
@@ -195,9 +188,9 @@ public class BloomFilterWrapper implements Serializable {
         }
         initCharset();
         BloomFilter<CharSequence> bf = this.bloomfilters.get(0);
-        if (bloomfilterBucketLength() > 1) {
+        if (getBloomfilterBucketLength() > 1) {
             byte[] datas = element.toString().getBytes(this.charset);
-            int bfIndex = Math.abs(Hashing.murmur3_128().hashBytes(datas).asInt()) % bloomfilterBucketLength();
+            int bfIndex = Math.abs(Hashing.murmur3_128().hashBytes(datas).asInt()) % getBloomfilterBucketLength();
             bf = this.bloomfilters.get(bfIndex);
         }
         return bf.mightContain(element);
@@ -212,6 +205,11 @@ public class BloomFilterWrapper implements Serializable {
         return timeVersion;
     }
 
+    /**
+     * setTimeVersion
+     *
+     * @param timeVersion
+     */
     public void setTimeVersion(Date timeVersion) {
         this.timeVersion = timeVersion;
     }
@@ -250,6 +248,33 @@ public class BloomFilterWrapper implements Serializable {
      */
     public long getNumberOfAddedElements() {
         return numberOfAddedElements;
+    }
+
+    /**
+     * getNumberOfBits
+     *
+     * @return
+     */
+    public long getNumberOfBits() {
+        return numberOfBits;
+    }
+
+    /**
+     * getBloomfilterFileSize
+     *
+     * @return
+     */
+    public long getBloomfilterFileSize() {
+        return bloomfilterFileSize;
+    }
+
+    /**
+     * setBloomfilterFileSize
+     *
+     * @param bloomfilterFileSize
+     */
+    public void setBloomfilterFileSize(long bloomfilterFileSize) {
+        this.bloomfilterFileSize = bloomfilterFileSize;
     }
 
     @Override

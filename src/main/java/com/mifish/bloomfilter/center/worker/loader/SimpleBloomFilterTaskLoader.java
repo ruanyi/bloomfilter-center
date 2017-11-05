@@ -1,22 +1,31 @@
 package com.mifish.bloomfilter.center.worker.loader;
 
+import com.mifish.bloomfilter.center.BloomFilterConstant;
+import com.mifish.bloomfilter.center.container.BloomFilterContainer;
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskPlan;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
 import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
 import com.mifish.bloomfilter.center.model.ConfigMeta;
 import com.mifish.bloomfilter.center.repository.BloomFilterConfigRepository;
+import com.mifish.bloomfilter.center.repository.BloomFilterLockRepository;
+import com.mifish.bloomfilter.center.repository.BloomFilterOutputRepository;
 import com.mifish.bloomfilter.center.template.BloomFilterLoadTemplate;
 import com.mifish.bloomfilter.center.worker.AbstractBloomFilterTaskWorker;
 import com.mifish.bloomfilter.center.worker.GroupTaskWorkerManager;
 import com.mifish.bloomfilter.center.worker.TaskWorkerType;
-import org.apache.commons.lang.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.mifish.bloomfilter.center.BloomFilterConstant.BIT_FACTOR;
+import static com.mifish.bloomfilter.center.util.BloomFilterUtils.formateBloomFilterDate;
 
 /**
  * Description:
@@ -32,8 +41,8 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
     /***bloomFilterLoadTemplate*/
     private BloomFilterLoadTemplate bloomFilterLoadTemplate;
 
-    /***formatter*/
-    private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+    /***bloomFilterContainer*/
+    private BloomFilterContainer bloomFilterContainer;
 
     /**
      * AbstractBloomFilterTaskWorker
@@ -60,62 +69,179 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
         }
         Date startTaskTime = new Date();
         List<BloomFilterTask> loadAllTasks = taskPlan.getOptimizeTasks();
-        List<BloomFilterWrapper> bfs = new ArrayList<>(loadAllTasks.size());
-        for (BloomFilterTask bftask : loadAllTasks) {
-            String bfname = bftask.getBloomFilterName();
-            ConfigMeta configMeta = obtainBloomFilterConfigMeta(bfname);
-            boolean isLock = obtainBloomFilterLoadLock(bfname, configMeta.getTimeVersion(),
-                    bftask.isForceLoadTask());
-            if (isLock) {
-                BloomFilterTaskResult result = this.bloomFilterLoadTemplate.load(bftask, startTaskTime);
-                if (result.isSuccess()) {
-                    bfs.add(result.getBloomFilterWrapper());
-                } else {
-                    this.bloomFilterLoadTemplate.getBloomFilterLockRepository().releaseBloomFilterLock(bfname, new
-                            Date());
-                    logger.warn("");
+        Map<String, BloomFilterWrapper> bfs = new HashMap<>(loadAllTasks.size());
+        Map<String, ConfigMeta> bflocks = new HashMap<>(loadAllTasks.size());
+        boolean isAllSuccess = true;
+        String taskId = taskPlan.getTaskId();
+        try {
+            for (BloomFilterTask bftask : loadAllTasks) {
+                String bfname = bftask.getBloomFilterName();
+                ConfigMeta configMeta = obtainBloomFilterConfigMeta(taskId, bfname);
+                bftask.addAttribute("config_meta", configMeta);
+                boolean isLock = obtainBloomFilterLoadLock(taskId, bfname, configMeta.getTimeVersion(),
+                        bftask.isForceLoadTask());
+                if (isLock) {
+                    bflocks.put(bfname, configMeta);
+                    BloomFilterTaskResult result = this.bloomFilterLoadTemplate.load(bftask, startTaskTime);
+                    if (result == null || !result.isSuccess()) {
+                        isAllSuccess = false;
+                        break;
+                    }
+                    //
+                    bfs.put(bfname, result.getBloomFilterWrapper());
                 }
             }
+            //
+            if (isAllSuccess && !bfs.isEmpty()) {
+                isAllSuccess = consistentStoreBloomFilters(taskId, bfs);
+            }
+        } finally {
+            //释放刚刚获得的锁
+            releaseBloomFilterLoadLock(taskId, bflocks);
+            //logger detail message
+            logBloomFilterDetailMessage(taskPlan, isAllSuccess);
         }
-        //
-        for (BloomFilterWrapper bf : bfs) {
-            //放入，and 存储
-            boolean isSuccess = this.bloomFilterLoadTemplate.getBloomFilterOutputRepository().storeBloomFilter(bf);
-            this.bloomFilterLoadTemplate.getBloomFilterLockRepository().releaseBloomFilterLock("", new
-                    Date());
+    }
+
+    /**
+     * consistentStoreBloomFilters
+     *
+     * @param taskId
+     * @param bfs
+     * @return
+     */
+    private boolean consistentStoreBloomFilters(String taskId, Map<String, BloomFilterWrapper> bfs) {
+        if (bfs == null || bfs.isEmpty()) {
+            return false;
         }
-        //logger detail message
+        BloomFilterOutputRepository bloomFilterOutputRepository = this.bloomFilterLoadTemplate
+                .getBloomFilterOutputRepository();
+        boolean isSuccess = bloomFilterOutputRepository.batchStoreBloomFilters(bfs.values());
         if (logger.isInfoEnabled()) {
-            logger.info("");
+            logger.info("SimpleBloomFilterTaskLoader,consistentStoreBloomFilters,taskId:" + taskId + ",bfnames:" +
+                    bfs.keySet() + "," + "isSuccess:" + isSuccess);
         }
+        return true;
+    }
+
+    /**
+     * logBloomFilterDetailMessage
+     *
+     * @param taskPlan
+     * @param isAllSuccess
+     */
+    private void logBloomFilterDetailMessage(BloomFilterTaskPlan taskPlan, boolean isAllSuccess) {
+        StringBuilder result = new StringBuilder("SimpleBloomFilterTaskLoader,");
+        result.append("taskId=").append(taskPlan.getTaskId()).append(",");
+        result.append("orgLoadTask:").append(taskPlan.getOriginalTask()).append(",");
+        result.append("loadAllTasks").append(taskPlan.getOptimizeTasks()).append(",");
+        result.append("isAllSuccess:").append(isAllSuccess).append(",");
+        Set<String> bfnames = this.bloomFilterContainer.getAllBloomFilterNames();
+        result.append("count:").append(bfnames.size()).append(",");
+        result.append("bloomfilters[");
+        for (Iterator<String> itr = bfnames.iterator(); itr.hasNext(); ) {
+            String bfname = itr.next();
+            BloomFilterWrapper bfwapper = this.bloomFilterContainer.getBloomFilterByName(bfname);
+            result.append("{").append(bfname).append(",");
+            result.append(formateBloomFilterDate(bfwapper.getTimeVersion())).append(",");
+            result.append(bfwapper.getExpectedNumberOfElements()).append(",");
+            result.append(bfwapper.getNumberOfAddedElements()).append(",");
+            result.append(bfwapper.getBloomfilterBucketLength()).append(",");
+            result.append(formatBloomFilterDataslength(bfwapper.getNumberOfBits() / BIT_FACTOR)).append(",");
+            result.append(formatBloomFilterDataslength(bfwapper.getBloomfilterFileSize())).append("}");
+        }
+        if (logger.isInfoEnabled()) {
+            logger.info(result.toString());
+        }
+    }
+
+    /**
+     * formatBloomFilterDataslength
+     *
+     * @param numberOfBytes
+     * @return
+     */
+    private String formatBloomFilterDataslength(long numberOfBytes) {
+        if (numberOfBytes < BloomFilterConstant.K_FACTOR) {
+            return numberOfBytes + "Byte";
+        }
+        if (numberOfBytes < BloomFilterConstant.M_FACTOR) {
+            return (numberOfBytes / BloomFilterConstant.K_FACTOR) + "K";
+        }
+        return (numberOfBytes / BloomFilterConstant.M_FACTOR) + "M";
     }
 
     /**
      * obtainBloomFilterConfigMeta
      *
+     * @param taskId
      * @param name
      * @return
      */
-    private ConfigMeta obtainBloomFilterConfigMeta(String name) {
+    private ConfigMeta obtainBloomFilterConfigMeta(String taskId, String name) {
         BloomFilterConfigRepository bloomFilterConfigRepository = this.bloomFilterLoadTemplate
                 .getBloomFilterConfigRepository();
-        return bloomFilterConfigRepository.queryConfigMetaByName(name);
+        ConfigMeta configMeta = bloomFilterConfigRepository.queryConfigMetaByName(name);
+        if (logger.isInfoEnabled()) {
+            logger.info("SimpleBloomFilterTaskLoader,obtainBloomFilterConfigMeta,taskId:" + taskId + ",name:" + name
+                    + ",configMeta:" + configMeta);
+        }
+        return configMeta;
     }
 
     /**
      * obtainBloomFilterLoadLock
      *
+     * @param taskId
      * @param name
      * @param timeVersion
      * @param isForced
      * @return
      */
-    private boolean obtainBloomFilterLoadLock(String name, Date timeVersion, boolean isForced) {
-        return this.bloomFilterLoadTemplate.getBloomFilterLockRepository().obtainBloomFilterLock(name, timeVersion,
-                isForced);
+    private boolean obtainBloomFilterLoadLock(String taskId, String name, Date timeVersion, boolean isForced) {
+        BloomFilterLockRepository bloomFilterLockRepository = this.bloomFilterLoadTemplate
+                .getBloomFilterLockRepository();
+        boolean isLock = bloomFilterLockRepository.obtainBloomFilterLock(name, timeVersion, isForced);
+        if (logger.isInfoEnabled()) {
+            logger.info("SimpleBloomFilterTaskLoader,obtainBloomFilterLoadLock,taskId:" + taskId + ",name:" + name +
+                    ",timeVersion:" + formateBloomFilterDate(timeVersion) + ",isForced:" + isForced + ",isLock:" +
+                    isLock);
+        }
+        return isLock;
+    }
+
+
+    /**
+     * releaseBloomFilterLoadLock
+     *
+     * @param taskId
+     * @param bflocks
+     * @return
+     */
+    private boolean releaseBloomFilterLoadLock(String taskId, Map<String, ConfigMeta> bflocks) {
+        if (bflocks == null || bflocks.isEmpty()) {
+            return false;
+        }
+        BloomFilterLockRepository bloomFilterLockRepository = this.bloomFilterLoadTemplate
+                .getBloomFilterLockRepository();
+        Map<String, Boolean> status = new HashMap<>(bflocks.size());
+        for (Map.Entry<String, ConfigMeta> entry : bflocks.entrySet()) {
+            boolean isSuccess = bloomFilterLockRepository.releaseBloomFilterLock(entry.getKey(), entry.getValue()
+                    .getTimeVersion());
+            status.put(entry.getKey(), isSuccess);
+        }
+        if (logger.isInfoEnabled()) {
+            logger.info("SimpleBloomFilterTaskLoader,releaseBloomFilterLoadLock,taskId:" + taskId + ",status:" +
+                    status);
+        }
+        return true;
     }
 
     public void setBloomFilterLoadTemplate(BloomFilterLoadTemplate bloomFilterLoadTemplate) {
         this.bloomFilterLoadTemplate = bloomFilterLoadTemplate;
+    }
+
+    public void setBloomFilterContainer(BloomFilterContainer bloomFilterContainer) {
+        this.bloomFilterContainer = bloomFilterContainer;
     }
 }

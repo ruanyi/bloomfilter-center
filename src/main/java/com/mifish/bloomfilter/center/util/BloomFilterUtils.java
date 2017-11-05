@@ -1,5 +1,9 @@
 package com.mifish.bloomfilter.center.util;
 
+import org.apache.commons.lang.time.FastDateFormat;
+
+import java.util.Date;
+
 /**
  * Description:
  * <p>
@@ -15,11 +19,8 @@ package com.mifish.bloomfilter.center.util;
  */
 public final class BloomFilterUtils {
 
-    /***BloomFilterUtils*/
-    private BloomFilterUtils() {
-
-    }
-
+    /***formatter*/
+    private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
     /**
      * caculateOptimalNumOfHashFunctions
@@ -67,5 +68,23 @@ public final class BloomFilterUtils {
      */
     public static double caculateNumberAddElements(long m, double f) {
         return (m * Math.log(0.6185f) / Math.log(f));
+    }
+
+    /**
+     * formateBloomFilterDate
+     *
+     * @param date
+     * @return
+     */
+    public static String formateBloomFilterDate(Date date) {
+        if (date == null) {
+            return "-1";
+        }
+        return FORMATTER.format(date);
+    }
+
+    /***BloomFilterUtils*/
+    private BloomFilterUtils() throws Exception {
+        throw new IllegalAccessException("cannot be access BloomFilterUtils");
     }
 }

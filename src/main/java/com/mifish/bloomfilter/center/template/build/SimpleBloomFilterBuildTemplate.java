@@ -19,8 +19,8 @@ public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate 
     /***bloomFilterInputRepository*/
     private BloomFilterInputRepository bloomFilterInputRepository;
 
-    /***bloomFilterTimeVersionRepository*/
-    private BloomFilterTimeVersionRepository bloomFilterTimeVersionRepository;
+//    /***bloomFilterTimeVersionRepository*/
+//    private BloomFilterTimeVersionRepository bloomFilterTimeVersionRepository;
 
     /***bloomFilterLockRepository*/
     private BloomFilterLockRepository bloomFilterLockRepository;
@@ -49,10 +49,6 @@ public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate 
 
     public void setBloomFilterInputRepository(BloomFilterInputRepository bloomFilterInputRepository) {
         this.bloomFilterInputRepository = bloomFilterInputRepository;
-    }
-
-    public void setBloomFilterTimeVersionRepository(BloomFilterTimeVersionRepository bloomFilterTimeVersionRepository) {
-        this.bloomFilterTimeVersionRepository = bloomFilterTimeVersionRepository;
     }
 
     public void setBloomFilterLockRepository(BloomFilterLockRepository bloomFilterLockRepository) {

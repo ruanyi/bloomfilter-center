@@ -1,5 +1,6 @@
 package com.mifish.bloomfilter.center.worker.manager;
 
+import com.mifish.bloomfilter.center.container.BloomFilterContainer;
 import com.mifish.bloomfilter.center.controller.BloomFilterController;
 import com.mifish.bloomfilter.center.model.TaskMeta;
 import com.mifish.bloomfilter.center.strategy.TaskOptimizeStrategyContainer;
@@ -44,6 +45,9 @@ public class SimpleGroupTaskWorkerManager implements GroupTaskWorkerManager {
 
     /***strategyContainer*/
     private TaskOptimizeStrategyContainer strategyContainer;
+
+    /***bloomFilterContainer*/
+    private BloomFilterContainer bloomFilterContainer;
 
     /**
      * report
@@ -137,6 +141,10 @@ public class SimpleGroupTaskWorkerManager implements GroupTaskWorkerManager {
         this.strategyContainer = strategyContainer;
     }
 
+    public void setBloomFilterContainer(BloomFilterContainer bloomFilterContainer) {
+        this.bloomFilterContainer = bloomFilterContainer;
+    }
+
     public void setWorkers(ConcurrentHashMap<String, BloomFilterGroupTaskWorker> workers) {
         this.workers = workers;
     }
@@ -181,7 +189,7 @@ public class SimpleGroupTaskWorkerManager implements GroupTaskWorkerManager {
                         taskWorkerManager);
                 loader.setStrategyContainer(strategyContainer);
                 loader.setBloomFilterLoadTemplate(bloomFilterLoadTemplate);
-                loader.setBloomFilterController(bloomFilterController);
+                loader.setBloomFilterContainer(bloomFilterContainer);
                 this.bloomFilterTaskWorker = loader;
             }
         }

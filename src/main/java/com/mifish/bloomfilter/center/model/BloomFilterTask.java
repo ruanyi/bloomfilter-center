@@ -3,6 +3,8 @@ package com.mifish.bloomfilter.center.model;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -29,6 +31,10 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
     /***taskType*/
     private BloomFilterTaskType taskType;
 
+    /***attributes*/
+    private Map<String, Object> attributes = new HashMap<String, Object>();
+
+
 
     /**
      * BloomFilterTask
@@ -46,21 +52,78 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
         this.taskType = taskType;
     }
 
-
+    /**
+     * getGroup
+     *
+     * @return
+     */
     public String getGroup() {
         return group;
     }
 
+    /**
+     * getBloomFilterName
+     *
+     * @return
+     */
     public String getBloomFilterName() {
         return bloomFilterName;
     }
 
+    /**
+     * getOrder
+     *
+     * @return
+     */
     public int getOrder() {
         return order;
     }
 
+    /**
+     * getTaskType
+     *
+     * @return
+     */
     public BloomFilterTaskType getTaskType() {
         return taskType;
+    }
+
+    /**
+     * addAttribute
+     *
+     * @param key
+     * @param value
+     */
+    public void addAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+    }
+
+    /**
+     * addAttributes
+     *
+     * @param attributes
+     */
+    public void addAttributes(Map<String, Object> attributes) {
+        if (attributes == null || attributes.isEmpty()) {
+            return;
+        }
+        this.attributes.putAll(attributes);
+    }
+
+    /**
+     * getAttribute
+     *
+     * @param key
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public <T> T getAttribute(String key, Class<T> clazz) {
+        Object obj = this.attributes.get(key);
+        if (obj == null) {
+            return null;
+        }
+        return clazz.cast(obj);
     }
 
     /**

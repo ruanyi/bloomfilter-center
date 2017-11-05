@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * Description:
  * <p>
@@ -29,18 +31,26 @@ public class SimpleBloomFilterContainer implements BloomFilterContainer {
     /***bloomfilters*/
     private Map<String, BloomFilterWrapper> bloomfilters = Maps.newConcurrentMap();
 
-    /***lock*/
-    private final Lock lock = new ReentrantLock();
-
-
+    /**
+     * getBloomFilterByName
+     *
+     * @param name
+     * @return
+     */
     @Override
     public BloomFilterWrapper getBloomFilterByName(String name) {
         if (StringUtils.isBlank(name)) {
             return null;
         }
-        return bloomfilters.get(name);
+        return this.bloomfilters.get(name);
     }
 
+    /**
+     * isBloomFilterExist
+     *
+     * @param name
+     * @return
+     */
     @Override
     public boolean isBloomFilterExist(String name) {
         if (StringUtils.isBlank(name)) {
@@ -49,6 +59,12 @@ public class SimpleBloomFilterContainer implements BloomFilterContainer {
         return this.bloomfilters.containsKey(name);
     }
 
+    /**
+     * getBloomFiterTimeVersion
+     *
+     * @param name
+     * @return
+     */
     @Override
     public Date getBloomFiterTimeVersion(String name) {
         BloomFilterWrapper bfwrapper = getBloomFilterByName(name);
@@ -68,41 +84,20 @@ public class SimpleBloomFilterContainer implements BloomFilterContainer {
         return new HashSet<>(this.bloomfilters.keySet());
     }
 
-    @Override
-    public boolean addBloomFilter(String name, BloomFilterWrapper bfwrapper) {
-        if (isNeedAddBloomFilter(name, bfwrapper)) {
-            try {
-                lock.lock();
-                if (isNeedAddBloomFilter(name, bfwrapper)) {
-                    bloomfilters.put(name, bfwrapper);
-                    return true;
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-        return false;
-    }
-
     /**
-     * isNeedAddBloomFilter
+     * addBloomFilter
      *
      * @param name
      * @param bfwrapper
      * @return
      */
-    private boolean isNeedAddBloomFilter(String name, BloomFilterWrapper bfwrapper) {
-        if (StringUtils.isBlank(name) || bfwrapper == null || bfwrapper.getTimeVersion() == null) {
-            return false;
-        }
-        if (!isBloomFilterExist(name)) {
-            return true;
-        }
-        Date timeVersion = getBloomFiterTimeVersion(name);
-        if (timeVersion.getTime() <= bfwrapper.getTimeVersion().getTime()) {
-            return true;
-        }
-        return false;
+    @Override
+    public BloomFilterWrapper addBloomFilter(String name, BloomFilterWrapper bfwrapper) {
+        checkArgument(StringUtils.isNotBlank(name), "name cannot be blank when add a bloomfilter to " +
+                "BloomFilterContainer");
+        checkArgument(bfwrapper != null, "bf cannot be null when add a bloomfilter to BloomFilterContainer");
+        BloomFilterWrapper oldBloomFilter = this.bloomfilters.put(name, bfwrapper);
+        return oldBloomFilter;
     }
 
     /**
@@ -119,6 +114,11 @@ public class SimpleBloomFilterContainer implements BloomFilterContainer {
         return this.bloomfilters.remove(name);
     }
 
+    /**
+     * getName
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return this.name;

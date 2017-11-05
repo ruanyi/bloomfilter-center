@@ -53,7 +53,7 @@ public interface BloomFilterContainer {
      * @param bfwrapper
      * @return
      */
-    boolean addBloomFilter(String name, BloomFilterWrapper bfwrapper);
+    BloomFilterWrapper addBloomFilter(String name, BloomFilterWrapper bfwrapper);
 
     /**
      * removeBloomfilter

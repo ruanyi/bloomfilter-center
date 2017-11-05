@@ -52,21 +52,41 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
                 .bloomFilterName, this.order);
     }
 
+    /**
+     * order
+     *
+     * @return
+     */
     @Override
     public int order() {
         return this.order;
     }
 
+    /**
+     * group
+     *
+     * @return
+     */
     @Override
     public String group() {
         return this.group;
     }
 
+    /**
+     * getBloomFilterName
+     *
+     * @return
+     */
     @Override
     public String getBloomFilterName() {
         return this.bloomFilterName;
     }
 
+    /**
+     * build
+     *
+     * @return
+     */
     @Override
     public boolean build() {
         BloomFilterTask buildTask = BloomFilterTask.buildNormalBuildTask(this.group, this.bloomFilterName, this.order);
@@ -82,6 +102,11 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
         return isSuccess;
     }
 
+    /**
+     * foreBuild
+     *
+     * @return
+     */
     @Override
     public boolean foreBuild() {
         BloomFilterTask buildTask = BloomFilterTask.buildForceLoadTask(this.group, this.bloomFilterName, this.order);
@@ -97,18 +122,38 @@ public class SimpleBloomFilterBuildService implements BloomFilterBuildService, I
         return isSuccess;
     }
 
+    /**
+     * setOrder
+     *
+     * @param order
+     */
     public void setOrder(int order) {
         this.order = order;
     }
 
+    /**
+     * setGroup
+     *
+     * @param group
+     */
     public void setGroup(String group) {
         this.group = group;
     }
 
+    /**
+     * setBloomFilterName
+     *
+     * @param bloomFilterName
+     */
     public void setBloomFilterName(String bloomFilterName) {
         this.bloomFilterName = bloomFilterName;
     }
 
+    /**
+     * setGroupTaskWorkerManager
+     *
+     * @param groupTaskWorkerManager
+     */
     public void setGroupTaskWorkerManager(GroupTaskWorkerManager groupTaskWorkerManager) {
         this.groupTaskWorkerManager = groupTaskWorkerManager;
     }

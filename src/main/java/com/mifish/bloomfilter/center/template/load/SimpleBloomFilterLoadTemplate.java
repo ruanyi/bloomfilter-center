@@ -2,11 +2,14 @@ package com.mifish.bloomfilter.center.template.load;
 
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
+import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
+import com.mifish.bloomfilter.center.model.ConfigMeta;
 import com.mifish.bloomfilter.center.repository.BloomFilterConfigRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterInputRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterLockRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterOutputRepository;
-import com.mifish.bloomfilter.center.template.BloomFilterLoadTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -16,7 +19,10 @@ import java.util.Date;
  * @author: rls
  * Date: 2017-10-15 21:12
  */
-public class SimpleBloomFilterLoadTemplate implements BloomFilterLoadTemplate {
+public class SimpleBloomFilterLoadTemplate extends AbstractBloomFilterLoadTemplate {
+
+    /***logger*/
+    private static final Logger logger = LoggerFactory.getLogger(SimpleBloomFilterLoadTemplate.class);
 
     /***bloomFilterInputRepository*/
     private BloomFilterInputRepository bloomFilterInputRepository;
@@ -29,18 +35,6 @@ public class SimpleBloomFilterLoadTemplate implements BloomFilterLoadTemplate {
 
     /***bloomFilterOutputRepository*/
     private BloomFilterOutputRepository bloomFilterOutputRepository;
-
-    /**
-     * load
-     *
-     * @param task
-     * @param startTaskTime
-     * @return
-     */
-    @Override
-    public BloomFilterTaskResult load(BloomFilterTask task, Date startTaskTime) {
-        return null;
-    }
 
     /**
      * getBloomFilterLockRepository
@@ -65,6 +59,11 @@ public class SimpleBloomFilterLoadTemplate implements BloomFilterLoadTemplate {
     @Override
     public BloomFilterOutputRepository getBloomFilterOutputRepository() {
         return this.bloomFilterOutputRepository;
+    }
+
+    @Override
+    public BloomFilterInputRepository getBloomFilterInputRepository() {
+        return null;
     }
 
     public void setBloomFilterInputRepository(BloomFilterInputRepository bloomFilterInputRepository) {

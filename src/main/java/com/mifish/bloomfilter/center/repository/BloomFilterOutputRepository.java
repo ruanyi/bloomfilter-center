@@ -2,6 +2,8 @@ package com.mifish.bloomfilter.center.repository;
 
 import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
 
+import java.util.Collection;
+
 /**
  * Description:
  *
@@ -17,4 +19,14 @@ public interface BloomFilterOutputRepository {
      * @return
      */
     boolean storeBloomFilter(BloomFilterWrapper bfwrapper);
+
+    /**
+     * batchStoreBloomFilters
+     * <p>
+     * consistence
+     *
+     * @param bfs
+     * @return
+     */
+    boolean batchStoreBloomFilters(Collection<BloomFilterWrapper> bfs);
 }

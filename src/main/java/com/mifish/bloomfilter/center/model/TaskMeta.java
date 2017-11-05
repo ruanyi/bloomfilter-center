@@ -45,7 +45,7 @@ public class TaskMeta implements Serializable, Comparable<TaskMeta> {
 
     @Override
     public String toString() {
-        return "taskName='" + taskName + ", taskOrder=" + taskOrder;
+        return "taskName=" + taskName + ", taskOrder=" + taskOrder;
     }
 
     @Override
