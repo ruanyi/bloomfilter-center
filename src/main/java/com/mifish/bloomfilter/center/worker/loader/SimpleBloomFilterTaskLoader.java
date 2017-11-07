@@ -10,6 +10,8 @@ import com.mifish.bloomfilter.center.model.ConfigMeta;
 import com.mifish.bloomfilter.center.repository.BloomFilterConfigRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterLockRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterOutputRepository;
+import com.mifish.bloomfilter.center.serializer.BloomFilterSerializer;
+import com.mifish.bloomfilter.center.serializer.impl.SimpleBloomFilterSerializer;
 import com.mifish.bloomfilter.center.template.BloomFilterLoadTemplate;
 import com.mifish.bloomfilter.center.worker.AbstractBloomFilterTaskWorker;
 import com.mifish.bloomfilter.center.worker.GroupTaskWorkerManager;
@@ -17,6 +19,8 @@ import com.mifish.bloomfilter.center.worker.TaskWorkerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +47,9 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
 
     /***bloomFilterContainer*/
     private BloomFilterContainer bloomFilterContainer;
+
+    /***bloomFilterSerializer*/
+    private BloomFilterSerializer bloomFilterSerializer = SimpleBloomFilterSerializer.getInstance();
 
     /**
      * AbstractBloomFilterTaskWorker
@@ -78,6 +85,7 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
                 String bfname = bftask.getBloomFilterName();
                 ConfigMeta configMeta = obtainBloomFilterConfigMeta(taskId, bfname);
                 bftask.addAttribute("config_meta", configMeta);
+                bftask.addAttribute("taskId", taskId);
                 boolean isLock = obtainBloomFilterLoadLock(taskId, bfname, configMeta.getTimeVersion(),
                         bftask.isForceLoadTask());
                 if (isLock) {
@@ -116,12 +124,17 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
         }
         BloomFilterOutputRepository bloomFilterOutputRepository = this.bloomFilterLoadTemplate
                 .getBloomFilterOutputRepository();
-        boolean isSuccess = bloomFilterOutputRepository.batchStoreBloomFilters(bfs.values());
+        Collection<byte[]> cs = new ArrayList<>(bfs.size());
+        for (Map.Entry<String, BloomFilterWrapper> entry : bfs.entrySet()) {
+            byte[] bfbytes = this.bloomFilterSerializer.serialize(entry.getValue());
+            cs.add(bfbytes);
+        }
+        boolean isSuccess = bloomFilterOutputRepository.batchStoreBloomFilters(cs);
         if (logger.isInfoEnabled()) {
             logger.info("SimpleBloomFilterTaskLoader,consistentStoreBloomFilters,taskId:" + taskId + ",bfnames:" +
                     bfs.keySet() + "," + "isSuccess:" + isSuccess);
         }
-        return true;
+        return isSuccess;
     }
 
     /**
@@ -237,11 +250,30 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
         return true;
     }
 
+    /**
+     * setBloomFilterLoadTemplate
+     *
+     * @param bloomFilterLoadTemplate
+     */
     public void setBloomFilterLoadTemplate(BloomFilterLoadTemplate bloomFilterLoadTemplate) {
         this.bloomFilterLoadTemplate = bloomFilterLoadTemplate;
     }
 
+    /**
+     * setBloomFilterContainer
+     *
+     * @param bloomFilterContainer
+     */
     public void setBloomFilterContainer(BloomFilterContainer bloomFilterContainer) {
         this.bloomFilterContainer = bloomFilterContainer;
+    }
+
+    /**
+     * setBloomFilterSerializer
+     *
+     * @param bloomFilterSerializer
+     */
+    public void setBloomFilterSerializer(BloomFilterSerializer bloomFilterSerializer) {
+        this.bloomFilterSerializer = bloomFilterSerializer;
     }
 }

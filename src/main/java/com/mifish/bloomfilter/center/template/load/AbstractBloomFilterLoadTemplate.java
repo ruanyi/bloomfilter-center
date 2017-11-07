@@ -74,69 +74,90 @@ public abstract class AbstractBloomFilterLoadTemplate implements BloomFilterLoad
             return null;
         }
         String bfname = loadTask.getBloomFilterName();
+        String taskId = loadTask.getAttribute("taskId", String.class);
         ConfigMeta configMeta = loadTask.getAttribute("config_meta", ConfigMeta.class);
-        Optional<Pair<Long, BloomFilterWrapper>> op = loadAndSerializeLocalBloomFilter(configMeta);
+        Optional<Pair<Long, BloomFilterWrapper>> op = loadAndSerializeLocalBloomFilter(taskId, configMeta);
         if (!op.isPresent()) {
-            op = loadAndSerializeRemoteBloomFilter(configMeta);
+            op = loadAndSerializeRemoteBloomFilter(taskId, configMeta);
         }
         if (!op.isPresent()) {
-            op = loadAndSerializeLastBloomFilter(configMeta);
+            op = loadAndSerializeLastBloomFilter(taskId, configMeta);
         }
-
+        BloomFilterTaskResult result = null;
+        if (op.isPresent()) {
+            long bloomfilterFileSize = op.get().getFirst();
+            BloomFilterWrapper blwrapper = op.get().getSecond();
+            blwrapper.setBloomfilterFileSize(bloomfilterFileSize);
+            blwrapper.setTimeVersion(configMeta.getTimeVersion());
+            result = BloomFilterTaskResult.SUCCESS(op.get().getSecond());
+        } else {
+            result = BloomFilterTaskResult.FAILURE(-9);
+        }
         if (logger.isInfoEnabled()) {
-            logger.info("");
+            logger.info("BloomFilterLoadTemplate,load,taskId" + taskId + ",bfname:" + bfname + ",");
         }
-        op.get().getSecond();
-        return null;
+        return result;
     }
 
     /**
      * loadAndSerializeLastBloomFilter
      *
+     * @param taskId
      * @param configMeta
      * @return
      */
-    private Optional<Pair<Long, BloomFilterWrapper>> loadAndSerializeLastBloomFilter(ConfigMeta configMeta) {
+    private Optional<Pair<Long, BloomFilterWrapper>> loadAndSerializeLastBloomFilter(String taskId, ConfigMeta
+            configMeta) {
         return Optional.empty();
     }
 
     /**
      * loadAndSerializeRemoteBloomFilter
      *
+     * @param taskId
      * @param configMeta
      * @return
      */
-    private Optional<Pair<Long, BloomFilterWrapper>> loadAndSerializeRemoteBloomFilter(ConfigMeta configMeta) {
+    private Optional<Pair<Long, BloomFilterWrapper>> loadAndSerializeRemoteBloomFilter(String taskId, ConfigMeta
+            configMeta) {
         if (configMeta == null) {
             return Optional.empty();
         }
-        String localBFPath = buildLocalBloomFilterPath(configMeta);
-        byte[] bfdatas = null;
+
         int retryTimes = 1;
-        boolean isSuccess = false;
+        byte[] bfdatas = null;
+        BloomFilterWrapper bfwrapper = null;
         String bfname = configMeta.getName();
         do {
             try {
-                BloomFilterWrapper bfwrapper = getBloomFilterInputRepository().queryBloomFilterByName(bfname);
-                if (bfwrapper != null) {
-
-                } else {
+                bfdatas = getBloomFilterInputRepository().queryBloomFilterByName(bfname);
+                bfwrapper = this.bloomFilterSerializer.deserialize(bfdatas);
+                if (bfwrapper == null) {
                     Thread.sleep(200 * retryTimes);
                 }
             } catch (Exception ex) {
-
+                logger.error("BloomFilterLoadTemplate,loadAndSerializeRemoteBloomFilter,taskId" + taskId + "," +
+                        "retryTimes:" + retryTimes + ",exception", ex);
             }
-        } while (!isSuccess && (retryTimes++ < this.loadRetryMaxTime));
-        return null;
+        } while ((bfwrapper == null) && (retryTimes++ < this.loadRetryMaxTime));
+        if (bfwrapper != null) {
+            //保存到本地文件系统中
+            String localBFPath = buildLocalBloomFilterPath(configMeta);
+            //
+            return Optional.of(Pair.of(new Long(bfdatas.length), bfwrapper));
+        }
+        return Optional.empty();
     }
 
     /**
      * loadAndSerializeLocalBloomFilter
      *
+     * @param taskId
      * @param configMeta
      * @return
      */
-    protected Optional<Pair<Long, BloomFilterWrapper>> loadAndSerializeLocalBloomFilter(ConfigMeta configMeta) {
+    protected Optional<Pair<Long, BloomFilterWrapper>> loadAndSerializeLocalBloomFilter(String taskId, ConfigMeta
+            configMeta) {
         if (configMeta == null) {
             return Optional.empty();
         }
@@ -149,7 +170,7 @@ public abstract class AbstractBloomFilterLoadTemplate implements BloomFilterLoad
             }
             return Optional.empty();
         } catch (Exception ex) {
-            logger.error("BloomFilterLoadTemplate,loadAndSerializeLocalBloomFilter,");
+            logger.error("BloomFilterLoadTemplate,loadAndSerializeLocalBloomFilter,taskId:" + taskId + ",exception");
             return Optional.empty();
         }
     }

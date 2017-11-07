@@ -15,10 +15,10 @@ public interface BloomFilterOutputRepository {
     /**
      * storeBloomFilter
      *
-     * @param bfwrapper
+     * @param bfdatas
      * @return
      */
-    boolean storeBloomFilter(BloomFilterWrapper bfwrapper);
+    boolean storeBloomFilter(byte[] bfdatas);
 
     /**
      * batchStoreBloomFilters
@@ -28,5 +28,5 @@ public interface BloomFilterOutputRepository {
      * @param bfs
      * @return
      */
-    boolean batchStoreBloomFilters(Collection<BloomFilterWrapper> bfs);
+    boolean batchStoreBloomFilters(Collection<byte[]> bfs);
 }

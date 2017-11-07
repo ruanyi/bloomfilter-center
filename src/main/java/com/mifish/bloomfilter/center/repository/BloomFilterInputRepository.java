@@ -1,7 +1,5 @@
 package com.mifish.bloomfilter.center.repository;
 
-import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
-
 /**
  * Description:
  *
@@ -16,5 +14,5 @@ public interface BloomFilterInputRepository {
      * @param name
      * @return
      */
-    BloomFilterWrapper queryBloomFilterByName(String name);
+    byte[] queryBloomFilterByName(String name);
 }

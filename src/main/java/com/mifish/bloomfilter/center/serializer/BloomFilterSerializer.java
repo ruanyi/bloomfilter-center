@@ -5,7 +5,8 @@ import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
 /**
  * Description:
  * <p>
- * User: rls
+ *
+ * @author : rls
  * Date: 2017-10-14 00:09
  */
 public interface BloomFilterSerializer {

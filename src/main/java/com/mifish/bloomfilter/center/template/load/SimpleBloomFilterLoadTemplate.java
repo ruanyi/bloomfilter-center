@@ -1,17 +1,11 @@
 package com.mifish.bloomfilter.center.template.load;
 
-import com.mifish.bloomfilter.center.model.BloomFilterTask;
-import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
-import com.mifish.bloomfilter.center.model.BloomFilterWrapper;
-import com.mifish.bloomfilter.center.model.ConfigMeta;
 import com.mifish.bloomfilter.center.repository.BloomFilterConfigRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterInputRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterLockRepository;
 import com.mifish.bloomfilter.center.repository.BloomFilterOutputRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /**
  * Description:
@@ -63,7 +57,7 @@ public class SimpleBloomFilterLoadTemplate extends AbstractBloomFilterLoadTempla
 
     @Override
     public BloomFilterInputRepository getBloomFilterInputRepository() {
-        return null;
+        return this.bloomFilterInputRepository;
     }
 
     public void setBloomFilterInputRepository(BloomFilterInputRepository bloomFilterInputRepository) {

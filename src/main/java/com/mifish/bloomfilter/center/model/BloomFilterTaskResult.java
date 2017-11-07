@@ -10,9 +10,6 @@ import java.io.Serializable;
  */
 public class BloomFilterTaskResult implements Serializable {
 
-    /***bloomFilterTask */
-    private BloomFilterTask bftask;
-
     /***retCode*/
     private int retCode;
 
@@ -21,6 +18,11 @@ public class BloomFilterTaskResult implements Serializable {
 
     /***bloomFilterWrapper*/
     private BloomFilterWrapper bloomFilterWrapper;
+
+    /***/
+    private BloomFilterTaskResult() {
+
+    }
 
     /**
      * isSuccess
@@ -31,35 +33,71 @@ public class BloomFilterTaskResult implements Serializable {
         return this.retCode == 0;
     }
 
-    public BloomFilterTask getBftask() {
-        return bftask;
-    }
-
-    public void setBftask(BloomFilterTask bftask) {
-        this.bftask = bftask;
-    }
-
+    /**
+     * getRetCode
+     *
+     * @return
+     */
     public int getRetCode() {
         return retCode;
     }
 
-    public void setRetCode(int retCode) {
-        this.retCode = retCode;
-    }
-
+    /**
+     * getMessage
+     *
+     * @return
+     */
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
+    /**
+     * getBloomFilterWrapper
+     *
+     * @return
+     */
     public BloomFilterWrapper getBloomFilterWrapper() {
         return bloomFilterWrapper;
     }
 
-    public void setBloomFilterWrapper(BloomFilterWrapper bloomFilterWrapper) {
-        this.bloomFilterWrapper = bloomFilterWrapper;
+    /**
+     * SUCCESS
+     *
+     * @param bloomFilterWrapper
+     * @return
+     */
+    public static BloomFilterTaskResult SUCCESS(BloomFilterWrapper bloomFilterWrapper) {
+        BloomFilterTaskResult result = new BloomFilterTaskResult();
+        result.retCode = 0;
+        result.message = "success";
+        result.bloomFilterWrapper = bloomFilterWrapper;
+        return result;
+    }
+
+    /**
+     * FAILUER
+     *
+     * @param retCode
+     * @param message
+     * @return
+     */
+    public static BloomFilterTaskResult FAILURE(int retCode, String message) {
+        if (retCode == 0) {
+            throw new IllegalArgumentException("BloomFilterTaskResult,retCode cannot be 0");
+        }
+        BloomFilterTaskResult result = new BloomFilterTaskResult();
+        result.retCode = retCode;
+        result.message = message;
+        return result;
+    }
+
+    /**
+     * FAILUER
+     *
+     * @param retCode
+     * @return
+     */
+    public static BloomFilterTaskResult FAILURE(int retCode) {
+        return FAILURE(retCode, "failure");
     }
 }

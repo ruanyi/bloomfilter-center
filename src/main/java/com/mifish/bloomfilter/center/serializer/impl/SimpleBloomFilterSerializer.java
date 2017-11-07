@@ -30,8 +30,8 @@ public class SimpleBloomFilterSerializer implements BloomFilterSerializer {
             oos.writeObject(wrapper);
             oos.flush();
             return bos.toByteArray();
-        } catch (IOException ex) {
-            throw new RuntimeException("SimpleBloomFilterSerializer,serialize,IOException", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("SimpleBloomFilterSerializer,serialize,Exception", ex);
         } finally {
             if (oos != null) {
                 try {

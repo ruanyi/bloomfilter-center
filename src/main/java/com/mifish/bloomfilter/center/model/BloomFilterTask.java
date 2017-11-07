@@ -34,8 +34,6 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
     /***attributes*/
     private Map<String, Object> attributes = new HashMap<String, Object>();
 
-
-
     /**
      * BloomFilterTask
      *
