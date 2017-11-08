@@ -9,10 +9,10 @@ package com.mifish.bloomfilter.center.repository;
 public interface BloomFilterInputRepository {
 
     /**
-     * queryBloomFilterByName
+     * obtainBloomFilterByUrl
      *
-     * @param name
+     * @param url
      * @return
      */
-    byte[] queryBloomFilterByName(String name);
+    byte[] obtainBloomFilterByUrl(String url);
 }

@@ -71,26 +71,26 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
      */
     @Override
     protected void executeTaskPlan(BloomFilterTaskPlan taskPlan) {
+        long startTime = System.currentTimeMillis();
         if (taskPlan == null) {
             return;
         }
-        Date startTaskTime = new Date();
         List<BloomFilterTask> loadAllTasks = taskPlan.getOptimizeTasks();
         Map<String, BloomFilterWrapper> bfs = new HashMap<>(loadAllTasks.size());
         Map<String, ConfigMeta> bflocks = new HashMap<>(loadAllTasks.size());
         boolean isAllSuccess = true;
         String taskId = taskPlan.getTaskId();
         try {
-            for (BloomFilterTask bftask : loadAllTasks) {
-                String bfname = bftask.getBloomFilterName();
+            for (BloomFilterTask loadTask : loadAllTasks) {
+                String bfname = loadTask.getBloomFilterName();
                 ConfigMeta configMeta = obtainBloomFilterConfigMeta(taskId, bfname);
-                bftask.addAttribute("config_meta", configMeta);
-                bftask.addAttribute("taskId", taskId);
+                loadTask.addAttribute("config_meta", configMeta);
+                loadTask.addAttribute("taskId", taskId);
                 boolean isLock = obtainBloomFilterLoadLock(taskId, bfname, configMeta.getTimeVersion(),
-                        bftask.isForceLoadTask());
+                        loadTask.isForceLoadTask());
                 if (isLock) {
                     bflocks.put(bfname, configMeta);
-                    BloomFilterTaskResult result = this.bloomFilterLoadTemplate.load(bftask, startTaskTime);
+                    BloomFilterTaskResult result = this.bloomFilterLoadTemplate.load(loadTask);
                     if (result == null || !result.isSuccess()) {
                         isAllSuccess = false;
                         break;
@@ -107,7 +107,7 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
             //释放刚刚获得的锁
             releaseBloomFilterLoadLock(taskId, bflocks);
             //logger detail message
-            logBloomFilterDetailMessage(taskPlan, isAllSuccess);
+            logBloomFilterDetailMessage(taskPlan, isAllSuccess, startTime);
         }
     }
 
@@ -142,8 +142,9 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
      *
      * @param taskPlan
      * @param isAllSuccess
+     * @param startTime
      */
-    private void logBloomFilterDetailMessage(BloomFilterTaskPlan taskPlan, boolean isAllSuccess) {
+    private void logBloomFilterDetailMessage(BloomFilterTaskPlan taskPlan, boolean isAllSuccess, long startTime) {
         StringBuilder result = new StringBuilder("SimpleBloomFilterTaskLoader,");
         result.append("taskId=").append(taskPlan.getTaskId()).append(",");
         result.append("orgLoadTask:").append(taskPlan.getOriginalTask()).append(",");
@@ -163,6 +164,7 @@ public class SimpleBloomFilterTaskLoader extends AbstractBloomFilterTaskWorker {
             result.append(formatBloomFilterDataslength(bfwapper.getNumberOfBits() / BIT_FACTOR)).append(",");
             result.append(formatBloomFilterDataslength(bfwapper.getBloomfilterFileSize())).append("}");
         }
+        result.append(",cost:").append(System.currentTimeMillis() - startTime).append("ms");
         if (logger.isInfoEnabled()) {
             logger.info(result.toString());
         }

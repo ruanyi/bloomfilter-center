@@ -5,8 +5,6 @@ import com.mifish.bloomfilter.center.model.BloomFilterTask;
 import com.mifish.bloomfilter.center.model.BloomFilterTaskResult;
 import com.mifish.bloomfilter.center.template.BloomFilterBuildTemplate;
 
-import java.util.Date;
-
 /**
  * Description:
  *
@@ -21,15 +19,20 @@ public abstract class AbstractBloomFilterBuildTemplate implements BloomFilterBui
     /**
      * build
      *
-     * @param bloomFilterTask
+     * @param buildTask
      * @return
      */
     @Override
-    public BloomFilterTaskResult build(BloomFilterTask bloomFilterTask, Date startTaskTime) {
+    public BloomFilterTaskResult build(BloomFilterTask buildTask) {
 
         return null;
     }
 
+    /**
+     * setBloomFilterController
+     *
+     * @param bloomFilterController
+     */
     public void setBloomFilterController(BloomFilterController bloomFilterController) {
         this.bloomFilterController = bloomFilterController;
     }

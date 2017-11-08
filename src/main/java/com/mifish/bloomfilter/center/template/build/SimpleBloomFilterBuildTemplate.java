@@ -14,7 +14,7 @@ import java.util.Date;
  * @author: rls
  * Date: 2017-10-15 21:23
  */
-public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate {
+public class SimpleBloomFilterBuildTemplate extends AbstractBloomFilterBuildTemplate {
 
     /***bloomFilterInputRepository*/
     private BloomFilterInputRepository bloomFilterInputRepository;
@@ -24,18 +24,6 @@ public class SimpleBloomFilterBuildTemplate implements BloomFilterBuildTemplate 
 
     /***bloomFilterLockRepository*/
     private BloomFilterLockRepository bloomFilterLockRepository;
-
-    /**
-     * build
-     *
-     * @param bloomFilterTask
-     * @param startTaskTime
-     * @return
-     */
-    @Override
-    public BloomFilterTaskResult build(BloomFilterTask bloomFilterTask, Date startTaskTime) {
-        return null;
-    }
 
     /**
      * getBloomFilterLockRepository

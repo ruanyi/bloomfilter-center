@@ -1,12 +1,17 @@
 package com.mifish.bloomfilter.center.util;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -19,12 +24,93 @@ import static com.google.common.base.Preconditions.checkArgument;
 public final class FileUtil {
 
     /**
-     * FileUtil
+     * getSimilarFile
      *
-     * @throws Exception
+     * @param directoy
+     * @param prefix
+     * @return
      */
-    private FileUtil() throws Exception {
-        throw new IllegalAccessException("FileUtil cannot be init");
+    public static List<File> getSimilarFile(String directoy, String prefix) {
+        if (StringUtils.isBlank(directoy)) {
+            return Lists.newArrayList();
+        }
+        File dir = new File(directoy);
+        if (!dir.exists() || !dir.isDirectory()) {
+            return Lists.newArrayList();
+        }
+        File[] files = dir.listFiles((d, name) -> {
+            return name.startsWith(prefix);
+        });
+        List<File> filelist = Arrays.asList(files);
+        Collections.sort(filelist, (file1, file2) -> {
+            long fm1 = ((file1 == null) ? 0 : file1.lastModified());
+            long fm2 = ((file2 == null) ? 0 : file2.lastModified());
+            return (fm1 == fm2) ? 0 : ((fm1 > fm2) ? 1 : -1);
+        });
+        return filelist;
+    }
+
+
+    /**
+     * writeFileBytes
+     *
+     * @param filepath
+     * @param datas
+     * @return
+     */
+    public static boolean writeFileBytes(String filepath, byte[] datas) {
+        if (StringUtils.isBlank(filepath)) {
+            return false;
+        }
+        File file = new File(filepath);
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new RuntimeException("File '" + file + "' exists but is a directory");
+            }
+            if (file.canWrite() == false) {
+                throw new RuntimeException("File '" + file + "' cannot be written to");
+            }
+            file.delete();
+        } else {
+            File parent = file.getParentFile();
+            if (parent != null) {
+                if (!parent.mkdirs() && !parent.isDirectory()) {
+                    throw new RuntimeException("Directory '" + parent + "' could not be created");
+                }
+            }
+        }
+        return writeFileBytes(file, datas, false);
+    }
+
+    /**
+     * writeFileBytes
+     *
+     * @param file
+     * @param datas
+     * @param append
+     * @return
+     */
+    public static boolean writeFileBytes(File file, byte[] datas, boolean append) {
+        FileOutputStream fos = null;
+        try {
+            if (file == null || datas == null) {
+                return false;
+            }
+            fos = new FileOutputStream(file, append);
+            fos.write(datas);
+            fos.flush();
+            return true;
+        } catch (IOException ex) {
+            throw new RuntimeException("FileUtil,writeFileBytes,IOException,FilePath[" + file.getPath() + "]", ex);
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    //ingore
+                }
+            }
+        }
     }
 
     /**
@@ -79,5 +165,14 @@ public final class FileUtil {
                 }
             }
         }
+    }
+
+    /**
+     * FileUtil
+     *
+     * @throws Exception
+     */
+    private FileUtil() throws Exception {
+        throw new IllegalAccessException("FileUtil cannot be init");
     }
 }

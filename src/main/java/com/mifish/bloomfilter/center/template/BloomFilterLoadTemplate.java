@@ -21,10 +21,9 @@ public interface BloomFilterLoadTemplate {
      * load
      *
      * @param loadTask
-     * @param startTaskTime
      * @return
      */
-    BloomFilterTaskResult load(BloomFilterTask loadTask, Date startTaskTime);
+    BloomFilterTaskResult load(BloomFilterTask loadTask);
 
     /**
      * getBloomFilterLockRepository

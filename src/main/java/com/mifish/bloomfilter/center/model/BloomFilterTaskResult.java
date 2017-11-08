@@ -10,16 +10,24 @@ import java.io.Serializable;
  */
 public class BloomFilterTaskResult implements Serializable {
 
-    /***retCode*/
+    /**
+     * retCode
+     */
     private int retCode;
 
-    /***message*/
+    /**
+     * message
+     */
     private String message;
 
-    /***bloomFilterWrapper*/
+    /**
+     * bloomFilterWrapper
+     */
     private BloomFilterWrapper bloomFilterWrapper;
 
-    /***/
+    /**
+     * BloomFilterTaskResult
+     */
     private BloomFilterTaskResult() {
 
     }
@@ -58,6 +66,43 @@ public class BloomFilterTaskResult implements Serializable {
      */
     public BloomFilterWrapper getBloomFilterWrapper() {
         return bloomFilterWrapper;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BloomFilterTaskResult result = (BloomFilterTaskResult) o;
+
+        if (retCode != result.retCode) {
+            return false;
+        }
+        if (message != null ? !message.equals(result.message) : result.message != null) {
+            return false;
+        }
+        return bloomFilterWrapper != null ? bloomFilterWrapper.equals(result.bloomFilterWrapper) : result
+                .bloomFilterWrapper == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = retCode;
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        result = 31 * result + (bloomFilterWrapper != null ? bloomFilterWrapper.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BloomFilterTaskResult{" +
+                "retCode=" + retCode +
+                ", message='" + message + '\'' +
+                '}';
     }
 
     /**

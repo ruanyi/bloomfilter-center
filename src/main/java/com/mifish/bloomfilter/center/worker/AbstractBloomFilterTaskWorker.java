@@ -86,7 +86,11 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
         }
     }
 
-    /***executeTaskPlan*/
+    /**
+     * 由子类去实现，执行计划优化，已经由策略层实现了
+     *
+     * @param taskPlan
+     */
     protected abstract void executeTaskPlan(BloomFilterTaskPlan taskPlan);
 
     @Override
@@ -94,6 +98,12 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
         return this.group;
     }
 
+    /**
+     * 提交任务队列，假如当前任务队列已经满了，则会提交失败，由下次调度再次进行
+     *
+     * @param task
+     * @return
+     */
     @Override
     public boolean submitTask(BloomFilterTask task) {
         if (task == null) {
@@ -117,6 +127,11 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
         return this.taskWorkerType;
     }
 
+    /**
+     * getTaskWorkerManager
+     *
+     * @return
+     */
     @Override
     public GroupTaskWorkerManager getTaskWorkerManager() {
         return this.taskWorkerManager;
