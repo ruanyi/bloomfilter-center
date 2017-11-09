@@ -26,26 +26,42 @@ public final class FileUtil {
     /**
      * getSimilarFile
      *
-     * @param directoy
+     * @param directory
      * @param prefix
      * @return
      */
-    public static List<File> getSimilarFile(String directoy, String prefix) {
-        if (StringUtils.isBlank(directoy)) {
+    public static List<File> getSimilarFile(String directory, String prefix) {
+        return getSimilarFile(directory, prefix, true);
+    }
+
+    /**
+     * getSimilarFile
+     *
+     * @param directory
+     * @param prefix
+     * @param asc
+     * @return
+     */
+    public static List<File> getSimilarFile(String directory, String prefix, final boolean asc) {
+        if (StringUtils.isBlank(directory)) {
             return Lists.newArrayList();
         }
-        File dir = new File(directoy);
+        File dir = new File(directory);
         if (!dir.exists() || !dir.isDirectory()) {
             return Lists.newArrayList();
         }
+        boolean isFilter = StringUtils.isNotBlank(prefix);
         File[] files = dir.listFiles((d, name) -> {
-            return name.startsWith(prefix);
+            return isFilter ? name.startsWith(prefix) : true;
         });
         List<File> filelist = Arrays.asList(files);
         Collections.sort(filelist, (file1, file2) -> {
             long fm1 = ((file1 == null) ? 0 : file1.lastModified());
             long fm2 = ((file2 == null) ? 0 : file2.lastModified());
-            return (fm1 == fm2) ? 0 : ((fm1 > fm2) ? 1 : -1);
+            if (fm1 == fm2) {
+                return 0;
+            }
+            return asc ? ((fm1 > fm2) ? 1 : -1) : ((fm1 > fm2) ? -1 : 1);
         });
         return filelist;
     }
