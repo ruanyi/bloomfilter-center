@@ -2,7 +2,7 @@
 布隆索引在实际工程中的使用
 
 ## 架构示意图
-![](./doc/bloomfilter-fentong.png)
+![](./doc/bloomfilter-framework.jpg)
 
 ## 概念
 ### loader
