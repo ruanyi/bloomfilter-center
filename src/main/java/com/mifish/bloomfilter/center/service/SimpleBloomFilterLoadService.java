@@ -105,18 +105,38 @@ public class SimpleBloomFilterLoadService implements BloomFilterLoadService, Ini
         return isSuccess;
     }
 
+    /**
+     * setOrder
+     *
+     * @param order
+     */
     public void setOrder(int order) {
         this.order = order;
     }
 
+    /**
+     * setGroup
+     *
+     * @param group
+     */
     public void setGroup(String group) {
         this.group = group;
     }
 
+    /**
+     * setBloomFilterName
+     *
+     * @param bloomFilterName
+     */
     public void setBloomFilterName(String bloomFilterName) {
         this.bloomFilterName = bloomFilterName;
     }
 
+    /**
+     * setGroupTaskWorkerManager
+     *
+     * @param groupTaskWorkerManager
+     */
     public void setGroupTaskWorkerManager(GroupTaskWorkerManager groupTaskWorkerManager) {
         this.groupTaskWorkerManager = groupTaskWorkerManager;
     }

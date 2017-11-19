@@ -29,10 +29,20 @@ public class TaskMeta implements Serializable, Comparable<TaskMeta> {
         this.taskOrder = taskOrder;
     }
 
+    /**
+     * getTaskName
+     *
+     * @return
+     */
     public String getTaskName() {
         return this.taskName;
     }
 
+    /**
+     * getTaskOrder
+     *
+     * @return
+     */
     public int getTaskOrder() {
         return taskOrder;
     }
@@ -43,11 +53,22 @@ public class TaskMeta implements Serializable, Comparable<TaskMeta> {
         return (getTaskOrder() < other.getTaskOrder()) ? -1 : (getTaskOrder() == other.getTaskOrder()) ? 0 : 1;
     }
 
+    /**
+     * toString
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "taskName=" + taskName + ", taskOrder=" + taskOrder;
     }
 
+    /**
+     * equals
+     *
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -65,6 +86,11 @@ public class TaskMeta implements Serializable, Comparable<TaskMeta> {
         return taskName != null ? taskName.equals(taskMeta.taskName) : taskMeta.taskName == null;
     }
 
+    /**
+     * hashCode
+     *
+     * @return
+     */
     @Override
     public int hashCode() {
         int result = taskName != null ? taskName.hashCode() : 0;

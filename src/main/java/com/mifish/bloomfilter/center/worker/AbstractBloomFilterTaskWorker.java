@@ -93,6 +93,11 @@ public abstract class AbstractBloomFilterTaskWorker implements BloomFilterTaskWo
      */
     protected abstract void executeTaskPlan(BloomFilterTaskPlan taskPlan);
 
+    /**
+     * 属于哪一类的任务：group
+     *
+     * @return
+     */
     @Override
     public String group() {
         return this.group;

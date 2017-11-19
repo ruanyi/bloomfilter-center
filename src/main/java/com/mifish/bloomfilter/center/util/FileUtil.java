@@ -31,7 +31,7 @@ public final class FileUtil {
      * @return
      */
     public static List<File> getSimilarFile(String directory, String prefix) {
-        return getSimilarFile(directory, prefix, true);
+        return getSimilarFile(directory, prefix, false);
     }
 
     /**

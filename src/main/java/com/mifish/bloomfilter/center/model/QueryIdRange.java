@@ -21,26 +21,56 @@ public class QueryIdRange implements Serializable {
     /***count*/
     private long count;
 
+    /**
+     * getMin
+     *
+     * @return
+     */
     public long getMin() {
         return min;
     }
 
+    /**
+     * setMin
+     *
+     * @param min
+     */
     public void setMin(long min) {
         this.min = min;
     }
 
+    /**
+     * getMax
+     *
+     * @return
+     */
     public long getMax() {
         return max;
     }
 
+    /**
+     * setMax
+     *
+     * @param max
+     */
     public void setMax(long max) {
         this.max = max;
     }
 
+    /**
+     * getCount
+     *
+     * @return
+     */
     public long getCount() {
         return count;
     }
 
+    /**
+     * setCount
+     *
+     * @param count
+     */
     public void setCount(long count) {
         this.count = count;
     }

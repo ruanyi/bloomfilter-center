@@ -1,6 +1,7 @@
 package com.mifish.bloomfilter.center.strategy.container;
 
 import com.mifish.bloomfilter.center.model.BloomFilterTask;
+import com.mifish.bloomfilter.center.strategy.SimpleTaskOptimizeStrategy;
 import com.mifish.bloomfilter.center.strategy.TaskOptimizeStrategy;
 import com.mifish.bloomfilter.center.strategy.TaskOptimizeStrategyContainer;
 
@@ -18,7 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleTaskOptimizeStrategyContainer implements TaskOptimizeStrategyContainer {
 
-    /***strategyContainer*/
+    /**
+     * 存放各个任务策略优化的相关方式
+     * <p>
+     * 假如没有，则使用默认的策略
+     * <p>
+     * 可扩展
+     */
     private Map<BloomFilterTask.BloomFilterTaskType, TaskOptimizeStrategy> strategyContainer = new
             ConcurrentHashMap<>();
 
@@ -30,7 +37,10 @@ public class SimpleTaskOptimizeStrategyContainer implements TaskOptimizeStrategy
      */
     @Override
     public TaskOptimizeStrategy select(BloomFilterTask.BloomFilterTaskType taskType) {
-        return this.strategyContainer.get(taskType);
+        if (this.strategyContainer.containsKey(taskType)) {
+            return this.strategyContainer.get(taskType);
+        }
+        return SimpleTaskOptimizeStrategy.getInstance();
     }
 
     /**

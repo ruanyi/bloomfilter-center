@@ -224,6 +224,15 @@ public class BloomFilterWrapper implements Serializable {
     }
 
     /**
+     * setCharsetName
+     *
+     * @param charsetName
+     */
+    public void setCharsetName(String charsetName) {
+        this.charsetName = charsetName;
+    }
+
+    /**
      * getFalsePositiveProbability
      *
      * @return

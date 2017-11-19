@@ -19,20 +19,38 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
 
     private static final long serialVersionUID = -8851005177130349239L;
 
-    /***group*/
+    /**
+     * group
+     */
     private String group;
 
-    /***bloomFilterName*/
+    /**
+     * bloomFilterName
+     */
     private String bloomFilterName;
 
-    /***order*/
+    /**
+     * order
+     */
     private int order;
 
-    /***taskType*/
+    /**
+     * taskType
+     */
     private BloomFilterTaskType taskType;
 
     /***attributes*/
     private Map<String, Object> attributes = new HashMap<String, Object>();
+
+    /**
+     * preTask
+     */
+    private BloomFilterTask preTask;
+
+    /**
+     * nextTask
+     */
+    private BloomFilterTask nextTask;
 
     /**
      * BloomFilterTask
@@ -42,7 +60,7 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
      * @param order
      * @param taskType
      */
-    public BloomFilterTask(String group, String bloomFilterName, int order, BloomFilterTaskType
+    private BloomFilterTask(String group, String bloomFilterName, int order, BloomFilterTaskType
             taskType) {
         this.group = group;
         this.bloomFilterName = bloomFilterName;
@@ -125,7 +143,43 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
     }
 
     /**
-     * isForceBuildTask
+     * setPreTask
+     *
+     * @param preTask
+     */
+    public void setPreTask(BloomFilterTask preTask) {
+        this.preTask = preTask;
+    }
+
+    /**
+     * setNextTask
+     *
+     * @param nextTask
+     */
+    public void setNextTask(BloomFilterTask nextTask) {
+        this.nextTask = nextTask;
+    }
+
+    /**
+     * getPreTask
+     *
+     * @return
+     */
+    public BloomFilterTask getPreTask() {
+        return preTask;
+    }
+
+    /**
+     * getNextTask
+     *
+     * @return
+     */
+    public BloomFilterTask getNextTask() {
+        return nextTask;
+    }
+
+    /**
+     * 是否强制构建任务
      *
      * @return
      */
@@ -156,12 +210,21 @@ public class BloomFilterTask implements Serializable, Comparable<BloomFilterTask
     }
 
     /**
-     * isForceLoadTask
+     * 是否强制加载任务
      *
      * @return
      */
     public boolean isForceLoadTask() {
         return getTaskType() == BloomFilterTaskType.FORCE_LOAD_TASK;
+    }
+
+    /**
+     * 是否强制任务
+     *
+     * @return
+     */
+    public boolean isForceTask() {
+        return isBuildTask() || isForceLoadTask();
     }
 
     /**
